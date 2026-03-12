@@ -1,0 +1,8 @@
+control:
+  id: NIST-AI-RMF-MAP-001
+  title: AI use-case and impact mapping completed
+  framework: NIST_AI_RMF
+
+tests:
+  - type: evidence_exists
+    evidence_type: impact_assessment
