@@ -1,2 +1,12 @@
 import { Nav } from "../../components/Nav";
-export default function Page(){return <main className="p-8"><Nav /><h1 className="text-2xl font-bold">Health AI Inventory & Clinical Risk Assessment</h1></main>;}
+import { ClinicalRiskAssessment } from "../../components/ClinicalRiskAssessment";
+
+export default function Page() {
+  return (
+    <main className="p-8 space-y-4">
+      <Nav />
+      <h1 className="text-2xl font-bold">Health AI Inventory</h1>
+      <ClinicalRiskAssessment />
+    </main>
+  );
+}

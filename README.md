@@ -4,7 +4,9 @@ Production-ready monorepo for a multi-tenant RegTech SaaS platform focused on AI
 
 ## Product Scope
 - AI system registration, dataset/model metadata inventory
+- Compliance assessments + per-control assessment tracking
 - Policy-as-code controls mapped to EU AI Act, ISO/IEC 42001, NIST AI RMF, GDPR, HIPAA
+- Context-aware policy evaluation ({ai_system, evidence, connectors, data assets})
 - Automated evidence capture from SDLC/ML platforms
 - Audit-ready reporting (JSON/CSV/PDF-ready payload)
 - Vertical modules for healthcare and manufacturing

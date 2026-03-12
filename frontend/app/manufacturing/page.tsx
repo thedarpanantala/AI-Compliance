@@ -1,2 +1,12 @@
 import { Nav } from "../../components/Nav";
-export default function Page(){return <main className="p-8"><Nav /><h1 className="text-2xl font-bold">Factory Compliance Heatmap & Evidence Checklist</h1></main>;}
+import { FactoryHeatmap } from "../../components/FactoryHeatmap";
+
+export default function Page() {
+  return (
+    <main className="p-8 space-y-4">
+      <Nav />
+      <h1 className="text-2xl font-bold">Factory Compliance Heatmap</h1>
+      <FactoryHeatmap />
+    </main>
+  );
+}

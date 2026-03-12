@@ -1,4 +1,5 @@
 """Policy engine unit tests."""
+
 from app.policy_engine.engine import evaluate_control
 
 
@@ -16,7 +17,9 @@ tests:
 """
     result = evaluate_control(
         control_yaml,
-        {"monitoring_enabled": True},
-        [{"evidence_type": "validation_study"}],
+        {
+            "ai_system": {"monitoring_enabled": True},
+            "evidence": [{"evidence_type": "validation_study"}],
+        },
     )
     assert result.passed is True
