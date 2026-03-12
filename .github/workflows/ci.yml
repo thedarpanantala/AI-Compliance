@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install backend deps and test
+        run: |
+          pip install -r backend/requirements.txt
+          pytest backend/tests
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend deps and build
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Docker build
+        run: |
+          docker build -f Dockerfile.backend -t ai-compliance-backend .
+          docker build -f Dockerfile.frontend -t ai-compliance-frontend .
