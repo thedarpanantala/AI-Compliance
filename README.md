@@ -49,3 +49,14 @@ cd frontend && npm ci && npm run test
 - Compliance pack marketplace abstraction (`control_library_service` extension point)
 - Dataset moat with historical control evaluations and regulator-ready evidence bundles
 - AI governance copilots supported through audit-safe retrieval APIs
+
+
+## Deployment Modes
+- Cloud-hosted multi-tenant SaaS
+- Single-tenant dedicated enterprise deployment
+- API-first integration mode
+
+See `docs/deployment/modes.md`.
+
+## Security Baseline
+Field encryption, JWT + RBAC, rate limiting, tamper-evident audit logs, and secrets manager integration are documented in `docs/security/hardening.md`.

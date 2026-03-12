@@ -12,3 +12,10 @@ Run `docker compose up --build`.
 - Store JWT secrets in cloud secret manager
 - Use managed Postgres with encryption-at-rest
 - Enable WAF and private service networking
+
+
+## Deployment models
+See `docs/deployment/modes.md` for multi-tenant SaaS, single-tenant dedicated, and API-first deployment patterns.
+
+## Security hardening
+See `docs/security/hardening.md` for encryption, JWT/RBAC, audit chaining, secrets management, and network controls.

@@ -1,7 +1,8 @@
 """Versioned REST API routes."""
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
+from app.core.security import require_roles
 from app.db.session import get_db
 from app.models.entities import AISystem, ComplianceAssessment, ControlAssessment, Evidence
 from app.policy_engine.context import build_policy_context
@@ -19,17 +20,36 @@ router = APIRouter(prefix="/api")
 
 
 @router.post("/ai-systems")
-def register_ai_system(payload: AISystemCreate, db: Session = Depends(get_db)) -> dict:
+def register_ai_system(
+    payload: AISystemCreate,
+    request: Request,
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager", "contributor")),
+    db: Session = Depends(get_db),
+) -> dict:
     system = AISystem(tenant_id=payload.org_id, **payload.model_dump(), framework_mappings={})
     db.add(system)
+    write_audit_log(
+        db=db,
+        org_id=payload.org_id,
+        user_id=claims.get("sub", "system"),
+        action="create",
+        entity="AISystem",
+        resource_id=payload.id,
+        before_data=None,
+        after_data=payload.model_dump(),
+        ip_address=request.client.host if request.client else None,
+    )
     db.commit()
-    write_audit_log(db, payload.org_id, "system", "create", "AISystem", payload.model_dump())
     return {"status": "created", "id": payload.id}
 
 
 @router.get("/ai-systems")
-def list_ai_systems(db: Session = Depends(get_db)) -> list[dict]:
-    rows = db.query(AISystem).all()
+def list_ai_systems(
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager", "contributor", "viewer", "auditor")),
+    db: Session = Depends(get_db),
+) -> list[dict]:
+    org_id = claims.get("org_id")
+    rows = db.query(AISystem).filter(AISystem.org_id == org_id).all()
     return [
         {
             "id": row.id,
@@ -43,27 +63,50 @@ def list_ai_systems(db: Session = Depends(get_db)) -> list[dict]:
 
 
 @router.post("/evidence")
-def attach_evidence(payload: EvidenceCreate, db: Session = Depends(get_db)) -> dict:
+def attach_evidence(
+    payload: EvidenceCreate,
+    request: Request,
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager", "contributor")),
+    db: Session = Depends(get_db),
+) -> dict:
     item = Evidence(tenant_id=payload.org_id, **payload.model_dump())
     db.add(item)
+    write_audit_log(
+        db=db,
+        org_id=payload.org_id,
+        user_id=claims.get("sub", "system"),
+        action="create",
+        entity="Evidence",
+        resource_id=payload.id,
+        before_data=None,
+        after_data=payload.model_dump(),
+        ip_address=request.client.host if request.client else None,
+    )
     db.commit()
-    write_audit_log(db, payload.org_id, "system", "create", "Evidence", payload.model_dump())
     return {"status": "attached", "id": payload.id}
 
 
 @router.post("/compliance/assessments")
-def create_assessment(payload: ComplianceAssessmentCreate, db: Session = Depends(get_db)) -> dict:
+def create_assessment(
+    payload: ComplianceAssessmentCreate,
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager")),
+    db: Session = Depends(get_db),
+) -> dict:
     assessment = ComplianceAssessment(tenant_id=payload.org_id, **payload.model_dump())
     db.add(assessment)
     db.commit()
-    return {"status": "created", "id": assessment.id}
+    return {"status": "created", "id": assessment.id, "requested_by": claims.get("sub")}
 
 
 @router.post("/compliance/control-assessments")
-def upsert_control_assessment(payload: ControlAssessmentUpsert, db: Session = Depends(get_db)) -> dict:
+def upsert_control_assessment(
+    payload: ControlAssessmentUpsert,
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager", "auditor")),
+    db: Session = Depends(get_db),
+) -> dict:
     row = db.query(ControlAssessment).filter(ControlAssessment.id == payload.id).first()
     if row is None:
-        row = ControlAssessment(tenant_id="demo-org", **payload.model_dump())
+        row = ControlAssessment(tenant_id=claims.get("org_id", "demo-org"), **payload.model_dump())
         db.add(row)
     else:
         row.status = payload.status
@@ -73,10 +116,17 @@ def upsert_control_assessment(payload: ControlAssessmentUpsert, db: Session = De
 
 
 @router.post("/compliance/run")
-def run_compliance_scan(req: ComplianceRunRequest, db: Session = Depends(get_db)) -> dict:
+def run_compliance_scan(
+    req: ComplianceRunRequest,
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager", "auditor")),
+    db: Session = Depends(get_db),
+) -> dict:
     system = db.query(AISystem).filter(AISystem.id == req.ai_system_id).first()
     if system is None:
         raise HTTPException(status_code=404, detail="AI system not found")
+
+    if system.org_id != claims.get("org_id"):
+        raise HTTPException(status_code=403, detail="Cross-tenant access denied")
 
     yaml_control = """
 control:
