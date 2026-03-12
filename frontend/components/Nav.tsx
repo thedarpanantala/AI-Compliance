@@ -9,7 +9,9 @@ const pages = [
   ["/evidence", "Evidence Viewer"],
   ["/workflows", "Workflow Tasks"],
   ["/healthcare", "Health AI Inventory"],
-  ["/manufacturing", "Factory Compliance Heatmap"]
+  ["/manufacturing", "Factory Compliance Heatmap"],
+  ["/artifacts", "Artifact Library"],
+  ["/jurisdiction-bridge", "Jurisdiction Bridge"]
 ];
 
 export function Nav() {

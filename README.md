@@ -60,3 +60,10 @@ See `docs/deployment/modes.md`.
 
 ## Security Baseline
 Field encryption, JWT + RBAC, rate limiting, tamper-evident audit logs, and secrets manager integration are documented in `docs/security/hardening.md`.
+
+## Artifact Generation Engine (Differentiator)
+- Convert messy evidence bundles into regulator-ready artifacts (Annex IV, ICMR HITL, BODH readiness, GPCB monthly, DPDPA trail, CS3D).
+- Jurisdiction Bridge maps India controls to EU/US equivalents with transformation instructions.
+- Human-in-the-loop review remains mandatory before issue.
+
+Success metric: Upload evidence and produce Annex IV-ready output in under 15 minutes.

@@ -6,6 +6,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from app.api.v1.routes import router as api_router
+from app.api.v1.artifact_routes import router as artifact_router
 from app.core.config import settings
 
 limiter = Limiter(key_func=get_remote_address, default_limits=[f"{settings.api_rate_limit_per_minute}/minute"])
@@ -14,6 +15,7 @@ app = FastAPI(title=settings.app_name, version="1.1.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.include_router(api_router)
+app.include_router(artifact_router)
 
 
 @app.get("/health")

@@ -1,0 +1,41 @@
+EU AI ACT ANNEX IV TECHNICAL DOCUMENTATION
+=========================================
+
+Template ID: {{ request.template_id }}
+System ID: {{ request.system_id }}
+Jurisdiction: {{ request.jurisdiction }}
+Target Audience: {{ request.target_audience }}
+Generated At: {{ audit.generated_at }}
+
+1. SYSTEM OVERVIEW
+- Name/ID: {{ metadata.system_id }}
+- Intended Use: Clinical triage support for regulated environment
+- Monitoring Enabled: {{ metadata.monitoring_enabled }}
+
+2. DATA AND GOVERNANCE SUMMARY
+- Evidence Bundle: {{ evidence.bundle_id }}
+- Consent Expiry: {{ evidence.consent_expiry }}
+- Lab Report Reference: {{ evidence.lab_report_ref }}
+- HITL Logs Present: {{ evidence.hitl_logs_present }}
+
+3. RISK MANAGEMENT AND HUMAN OVERSIGHT
+- Risk Section Draft:
+{{ llm.sections.risk_management }}
+
+- Human Oversight Draft:
+{{ llm.sections.human_oversight }}
+
+4. MODEL PERFORMANCE AND POST-MARKET MONITORING
+- Validation Evidence: {{ evidence.lab_report_ref }}
+- Operational Runtime Metric (proxy): {{ evidence.etp_runtime_hours }}
+- Gap Flags: {{ llm.gaps | join(', ') if llm.gaps else 'None' }}
+
+5. VALIDATION STATUS
+- Validation Passed: {{ validation.passed }}
+- Missing Sections: {{ validation.missing_sections | join(', ') if validation.missing_sections else 'None' }}
+- Reported Gaps: {{ validation.reported_gaps | join(', ') if validation.reported_gaps else 'None' }}
+
+6. AUDIT TRAIL
+- Evidence References: {{ audit.evidence_refs | join(', ') }}
+- Approver: {{ audit.approver }}
+- Citations: {{ audit.citations | join(' | ') }}

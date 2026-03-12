@@ -1,0 +1,34 @@
+GPCB MONTHLY ENVIRONMENTAL COMPLIANCE SUMMARY
+============================================
+
+Template ID: {{ request.template_id }}
+System ID: {{ request.system_id }}
+Jurisdiction: {{ request.jurisdiction }}
+Target Audience: {{ request.target_audience }}
+Generated At: {{ audit.generated_at }}
+
+1. SITE & PERIOD SNAPSHOT
+- Evidence Bundle: {{ evidence.bundle_id }}
+- Lab Report Ref: {{ evidence.lab_report_ref }}
+- ETP Runtime (hours): {{ evidence.etp_runtime_hours }}
+
+2. KEY ENVIRONMENTAL PARAMETERS
+- Effluent pH: {{ evidence.effluent_ph }}
+- Operator Training Records: {{ evidence.operator_training_records }}
+- Consent Expiry: {{ evidence.consent_expiry }}
+
+3. COMPLIANCE NARRATIVE (AUTO-GENERATED)
+{{ llm.sections.data_governance }}
+
+4. RISK FLAGS
+- GAPs: {{ llm.gaps | join(', ') if llm.gaps else 'None' }}
+- Validation Passed: {{ validation.passed }}
+
+5. SUBMISSION CHECKLIST
+- Lab report included: Yes
+- ETP operation logs included: Yes
+- Consent timeline reviewed: Yes
+
+6. AUDIT & APPROVAL
+- Evidence refs: {{ audit.evidence_refs | join(', ') }}
+- Human Approval: {{ audit.approver }}
