@@ -301,3 +301,17 @@ class MSMEEvidenceInbox(Base, TenantTimestampMixin):
     due_date: Mapped[Date | None] = mapped_column(Date, nullable=True)
     status: Mapped[str] = mapped_column(String(50), default="pending")
     evidence_id: Mapped[str | None] = mapped_column(ForeignKey("evidence.id"), nullable=True)
+
+
+class AgentUsageLog(Base, TenantTimestampMixin):
+    __tablename__ = "agent_usage_logs"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
+    user_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    model: Mapped[str] = mapped_column(String(100))
+    input_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cost_usd: Mapped[float] = mapped_column(Numeric(10, 6), default=0)
+    turns: Mapped[int] = mapped_column(Integer, default=1)
+    logged_at: Mapped[DateTime] = mapped_column(DateTime)

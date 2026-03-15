@@ -11,7 +11,8 @@ const pages = [
   ["/healthcare", "Health AI Inventory"],
   ["/manufacturing", "Factory Compliance Heatmap"],
   ["/artifacts", "Artifact Library"],
-  ["/jurisdiction-bridge", "Jurisdiction Bridge"]
+  ["/jurisdiction-bridge", "Jurisdiction Bridge"],
+  ["/try", "Try Agent"]
 ];
 
 export function Nav() {

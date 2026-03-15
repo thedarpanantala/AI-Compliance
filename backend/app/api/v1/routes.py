@@ -15,6 +15,8 @@ from app.schemas.common import (
     EvidenceCreate,
 )
 from app.services.audit import write_audit_log
+from app.agent.compliance_agent import run_compliance_agent
+from app.agent.standalone_agent import run_standalone_agent
 
 router = APIRouter(prefix="/api")
 
@@ -154,3 +156,28 @@ tests:
             "risk_tier": context["ai_system"].get("risk_tier"),
         },
     }
+
+
+@router.post("/agent/chat")
+async def agent_chat(payload: dict, db: Session = Depends(get_db)) -> dict:
+    """Platform-embedded compliance agent endpoint."""
+    result = await run_compliance_agent(
+        user_message=payload["message"],
+        org_id=payload["org_id"],
+        system_id=payload.get("system_id"),
+        conversation_history=payload.get("history", []),
+        db=db,
+        user_id=payload.get("user_id"),
+    )
+    return result
+
+
+@router.post("/agent/standalone")
+async def standalone_chat(payload: dict) -> dict:
+    """Standalone public-facing compliance agent endpoint."""
+    result = await run_standalone_agent(
+        user_message=payload["message"],
+        conversation_history=payload.get("history", []),
+        uploaded_docs=payload.get("uploaded_docs"),
+    )
+    return result

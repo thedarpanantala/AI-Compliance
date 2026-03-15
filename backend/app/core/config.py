@@ -64,5 +64,14 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     api_rate_limit_per_minute: int = 60
 
+    # Compliance agent provider settings.
+    # To switch later to Minimax/Kimi, update AGENT_PROVIDER, AGENT_BASE_URL,
+    # AGENT_API_KEY, AGENT_MODEL_CHEAP, AGENT_MODEL_COMPLEX in environment.
+    agent_provider: str = Field(default_factory=lambda: os.getenv("AGENT_PROVIDER", "anthropic"))
+    agent_api_key: str = Field(default_factory=lambda: os.getenv("AGENT_API_KEY", os.getenv("ANTHROPIC_API_KEY", "")))
+    agent_base_url: str = Field(default_factory=lambda: os.getenv("AGENT_BASE_URL", ""))
+    agent_model_cheap: str = Field(default_factory=lambda: os.getenv("AGENT_MODEL_CHEAP", "claude-haiku-4-5-20251001"))
+    agent_model_complex: str = Field(default_factory=lambda: os.getenv("AGENT_MODEL_COMPLEX", "claude-sonnet-4-5"))
+
 
 settings = Settings()
