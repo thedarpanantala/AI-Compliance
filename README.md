@@ -67,3 +67,7 @@ Field encryption, JWT + RBAC, rate limiting, tamper-evident audit logs, and secr
 - Human-in-the-loop review remains mandatory before issue.
 
 Success metric: Upload evidence and produce Annex IV-ready output in under 15 minutes.
+
+
+## Durable Adoption & Governance Engine
+See `docs/architecture/durable_adoption_governance_engine.md` for adoption, incentive/KPI, regulatory evolution, legacy sidecar, CRE, and HITL governance design.
