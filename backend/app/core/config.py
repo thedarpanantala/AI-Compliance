@@ -72,6 +72,10 @@ class Settings(BaseSettings):
     agent_base_url: str = Field(default_factory=lambda: os.getenv("AGENT_BASE_URL", ""))
     agent_model_cheap: str = Field(default_factory=lambda: os.getenv("AGENT_MODEL_CHEAP", "claude-haiku-4-5-20251001"))
     agent_model_complex: str = Field(default_factory=lambda: os.getenv("AGENT_MODEL_COMPLEX", "claude-sonnet-4-5"))
+    supabase_url: str = Field(default_factory=lambda: os.getenv("SUPABASE_URL", ""))
+    supabase_publishable_key: str = Field(default_factory=lambda: os.getenv("SUPABASE_PUBLISHABLE_KEY", ""))
+    supabase_service_role_key: str = Field(default_factory=lambda: os.getenv("SUPABASE_SERVICE_ROLE_KEY", ""))
+    allowed_origins: str = Field(default_factory=lambda: os.getenv("ALLOWED_ORIGINS", "http://localhost:3000"))
 
 
 settings = Settings()

@@ -19,3 +19,7 @@ See `docs/deployment/modes.md` for multi-tenant SaaS, single-tenant dedicated, a
 
 ## Security hardening
 See `docs/security/hardening.md` for encryption, JWT/RBAC, audit chaining, secrets management, and network controls.
+
+
+## Supabase deployment
+See `docs/deployment/supabase.md` for the exact frontend/backend env values to update, including where to put your publishable key, service role key, and Supabase Postgres connection string.
