@@ -1,0 +1,10 @@
+control:
+  id: ISO42001-5.3
+  title: AI governance roles and accountability defined
+  framework: ISO_42001
+
+tests:
+  - type: metadata_check
+    field: accountability_owner
+    operator: equals
+    value: assigned

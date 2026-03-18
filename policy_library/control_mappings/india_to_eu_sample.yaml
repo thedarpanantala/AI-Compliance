@@ -1,0 +1,28 @@
+mappings:
+  - id: MAP-IND-EU-001
+    indian_control: DPDPA-Consent-Record-30days
+    eu_equivalent:
+      - EUAI-Art10-Transparency
+      - EUAI-Art15-Human-Oversight
+    us_equivalent:
+      - NIST-AI-RMF-GOV-1
+    confidence_score: 0.92
+    evidence_transform: "consent_log -> hitl_log + decision_explanation"
+    transformation_steps:
+      - extract consent timestamps and scope
+      - align user consent to model decision sessions
+      - generate human-oversight traceability notes
+
+  - id: MAP-IND-EU-002
+    indian_control: ABDM-Consent-Token-Validation
+    eu_equivalent:
+      - EUAI-Art12-Record-Keeping
+      - GDPR-Art7-Consent
+    us_equivalent:
+      - HIPAA-164.308
+    confidence_score: 0.88
+    evidence_transform: "abdm_token_audit -> consent_audit_trail"
+    transformation_steps:
+      - verify token issuance and revocation
+      - map token events to patient consent lifecycle
+      - produce cross-border consent evidence packet
