@@ -73,5 +73,8 @@ Success metric: Upload evidence and produce Annex IV-ready output in under 15 mi
 See `docs/architecture/durable_adoption_governance_engine.md` for adoption, incentive/KPI, regulatory evolution, legacy sidecar, CRE, and HITL governance design.
 
 
+
 ## Supabase Deployment
 This repo is now Supabase-ready for managed Postgres + browser client wiring. See `docs/deployment/supabase.md` for the exact files and env vars to update.
+
+
