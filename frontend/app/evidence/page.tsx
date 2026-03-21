@@ -1,18 +1,5 @@
-import { Nav } from "../../components/Nav";
-import { EvidenceTimeline } from "../../components/EvidenceTimeline";
+import { Card, CardContent } from "@/components/ui/card";
 
-const events = [
-  { id: "1", title: "Validation study uploaded", source: "manual", at: "2026-01-01" },
-  { id: "2", title: "Deployment approval captured", source: "github", at: "2026-01-03" },
-  { id: "3", title: "Model test results collected", source: "mlflow", at: "2026-01-05" },
-];
-
-export default function Page() {
-  return (
-    <main className="p-8 space-y-4">
-      <Nav />
-      <h1 className="text-2xl font-bold">Evidence Viewer</h1>
-      <EvidenceTimeline events={events} />
-    </main>
-  );
+export default function EvidencePage() {
+  return <div className="space-y-4"><h1 className="text-2xl font-semibold">Evidence Viewer</h1><Card><CardContent className="p-4 text-sm">Evidence timeline, uploads, and audit freeze status.</CardContent></Card></div>;
 }

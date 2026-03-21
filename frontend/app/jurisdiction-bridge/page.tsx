@@ -1,12 +1,5 @@
-import { Nav } from "../../components/Nav";
-import { JurisdictionBridge } from "../../components/JurisdictionBridge";
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function BridgePage() {
-  return (
-    <main className="p-8 space-y-4">
-      <Nav />
-      <h1 className="text-2xl font-bold">Jurisdiction Bridge</h1>
-      <JurisdictionBridge />
-    </main>
-  );
+export default function JurisdictionBridgePage() {
+  return <div className="space-y-4"><h1 className="text-2xl font-semibold">Jurisdiction Bridge</h1><Card><CardContent className="p-4 text-sm">Map controls across EU AI Act, DPDPA, and sector-specific obligations.</CardContent></Card></div>;
 }

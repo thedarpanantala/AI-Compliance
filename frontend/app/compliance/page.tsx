@@ -1,18 +1,5 @@
-import { Nav } from "../../components/Nav";
-import { ControlStatusTable } from "../../components/ControlStatusTable";
+import { Card, CardContent } from "@/components/ui/card";
 
-const rows = [
-  { code: "EUAI-HR-001", title: "Monitoring enabled", framework: "EU AI Act", status: "pass" as const },
-  { code: "ISO42001-5.3", title: "Accountability owner assigned", framework: "ISO 42001", status: "partial" as const },
-  { code: "NIST-MAP-001", title: "Impact mapping evidence", framework: "NIST AI RMF", status: "fail" as const },
-];
-
-export default function Page() {
-  return (
-    <main className="p-8 space-y-4">
-      <Nav />
-      <h1 className="text-2xl font-bold">Compliance Dashboard</h1>
-      <ControlStatusTable rows={rows} />
-    </main>
-  );
+export default function CompliancePage() {
+  return <div className="space-y-4"><h1 className="text-2xl font-semibold">Compliance Dashboard</h1><Card><CardContent className="p-4 text-sm">Cross-module controls and risk trend at organization level.</CardContent></Card></div>;
 }
