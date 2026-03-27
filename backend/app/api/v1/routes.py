@@ -17,8 +17,12 @@ from app.schemas.common import (
 from app.services.audit import write_audit_log
 from app.agent.compliance_agent import run_compliance_agent
 from app.agent.standalone_agent import run_standalone_agent
+from app.api.v1.evidence_sources import router as evidence_sources_router
+from app.api.v1.reports import router as reports_router
 
 router = APIRouter(prefix="/api")
+router.include_router(evidence_sources_router, prefix="/evidence-sources", tags=["evidence-sources"])
+router.include_router(reports_router, prefix="/reports", tags=["reports"])
 
 
 @router.post("/ai-systems")
