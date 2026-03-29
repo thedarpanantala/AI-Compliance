@@ -1,18 +1,67 @@
-import { Nav } from "../../components/Nav";
-import { ControlStatusTable } from "../../components/ControlStatusTable";
-
-const rows = [
-  { code: "EUAI-HR-001", title: "Monitoring enabled", framework: "EU AI Act", status: "pass" as const },
-  { code: "ISO42001-5.3", title: "Accountability owner assigned", framework: "ISO 42001", status: "partial" as const },
-  { code: "NIST-MAP-001", title: "Impact mapping evidence", framework: "NIST AI RMF", status: "fail" as const },
+const frameworkRows = [
+  { framework: "EU AI Act 2024", progress: 72, controls: "49/68", risk: "Medium" },
+  { framework: "DPDPA 2023", progress: 88, controls: "30/34", risk: "Low" },
+  { framework: "ISO 42001", progress: 61, controls: "32/52", risk: "High" },
+  { framework: "NABH Clinical AI", progress: 95, controls: "27/28", risk: "Low" },
+  { framework: "CDSCO SaMD", progress: 80, controls: "33/41", risk: "Medium" },
+  { framework: "NIST AI RMF", progress: 55, controls: "44/80", risk: "High" }
 ];
 
-export default function Page() {
+export default function CompliancePage() {
   return (
-    <main className="p-8 space-y-4">
-      <Nav />
-      <h1 className="text-2xl font-bold">Compliance Dashboard</h1>
-      <ControlStatusTable rows={rows} />
+    <main className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">FRAMEWORK COMPLIANCE</h1>
+        <p className="muted">Manage regulatory obligations across jurisdictions</p>
+      </div>
+
+      <section className="kpi-grid">
+        <div className="card"><p className="muted text-sm">OVERALL HEALTH</p><p className="text-3xl font-bold">87%</p><p className="success text-sm">▲ +3% vs last month</p></div>
+        <div className="card"><p className="muted text-sm">FRAMEWORKS ACTIVE</p><p className="text-3xl font-bold">6</p></div>
+        <div className="card"><p className="muted text-sm">CONTROLS ASSESSED</p><p className="text-3xl font-bold">142/198</p></div>
+      </section>
+
+      <section className="card">
+        <div className="flex gap-2 flex-wrap mb-3">
+          <button className="ghost-btn">Active Frameworks</button>
+          <button className="ghost-btn">Control Library</button>
+          <button className="ghost-btn">Mappings</button>
+          <button className="ghost-btn">Gap</button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left border-b">
+                <th className="py-2">Framework</th><th>Progress</th><th>Controls</th><th>Risk</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {frameworkRows.map((row) => (
+                <tr key={row.framework} className="border-b last:border-b-0">
+                  <td className="py-2">{row.framework}</td>
+                  <td>{row.progress}%</td>
+                  <td>{row.controls}</td>
+                  <td>{row.risk}</td>
+                  <td><span className="pill active">● Active</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="flex gap-2 mb-3">
+          <button className="ghost-btn">Run Assessment</button>
+          <button className="ghost-btn">View Gap Analysis</button>
+          <button className="ghost-btn">Generate Report</button>
+        </div>
+        <h2 className="font-semibold">🤖 AI Agent Activity</h2>
+        <ul className="action-list">
+          <li>Generated ISO 42001 gap analysis (2h ago)</li>
+          <li>Mapped DPDPA §8 → GDPR Art. 7 (5h ago)</li>
+        </ul>
+      </section>
     </main>
   );
 }

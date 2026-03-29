@@ -1,16 +1,83 @@
-import { Nav } from "../components/Nav";
 import { SupabaseConnectionCard } from "../components/SupabaseConnectionCard";
+
+const frameworks = [
+  { name: "EU AI Act", progress: 72, gaps: 12 },
+  { name: "DPDPA 2023", progress: 88, gaps: 4 },
+  { name: "ISO 42001", progress: 61, gaps: 22 }
+];
 
 export default function DashboardPage() {
   return (
-    <main className="p-8 space-y-4">
-      <h1 className="text-3xl font-bold mb-4">AI Compliance Platform</h1>
-      <Nav />
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card"><h2>Active AI Systems</h2><p className="text-2xl">42</p></div>
-        <div className="card"><h2>Open Risks</h2><p className="text-2xl">7</p></div>
-        <div className="card"><h2>Audit Readiness</h2><p className="text-2xl">91%</p></div>
+    <main className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold">aic Privacy Cockpit <span className="muted text-sm">● Live v2.0</span></h1>
+        <p className="muted">Good morning, Darpan. Your compliance health is strong. 3 items need attention.</p>
+      </div>
+
+      <section className="kpi-grid">
+        <div className="card">
+          <p className="muted text-sm">AI Systems Monitored</p>
+          <p className="text-3xl font-bold">42</p>
+          <p className="success text-sm">↑ 3 new</p>
+        </div>
+        <div className="card">
+          <p className="muted text-sm">Active Jurisdictions</p>
+          <p className="text-3xl font-bold">07</p>
+          <p className="warning text-sm">2 alerts</p>
+        </div>
+        <div className="card">
+          <p className="muted text-sm">Compliance Health</p>
+          <p className="text-3xl font-bold">91%</p>
+          <p className="success text-sm">↑ 4.2% this month</p>
+        </div>
       </section>
+
+      <section className="card">
+        <h2 className="font-semibold">⚠️ Action Required (3)</h2>
+        <ul className="action-list">
+          <li className="warning">DSR-004 expires in 6 days — Arjun Gill (Next of kin)</li>
+          <li className="danger">ChestScan AI missing NABH validation protocol</li>
+          <li className="warning">EU AI Act: High-risk system assessment overdue</li>
+        </ul>
+        <div className="flex gap-2">
+          <button className="ghost-btn">Review All</button>
+          <button className="ghost-btn">Dismiss</button>
+        </div>
+      </section>
+
+      <section className="two-col">
+        <div className="card">
+          <h2 className="font-semibold">🤖 AI Agent Suggestions</h2>
+          <p className="muted my-2">"Generate Q2 compliance report for EU AI Act?"</p>
+          <div className="flex gap-2">
+            <button className="ghost-btn">Generate</button>
+            <button className="ghost-btn">Dismiss</button>
+          </div>
+        </div>
+        <div className="card">
+          <h2 className="font-semibold">Quick Actions</h2>
+          <ul className="action-list">
+            <li>Classify New AI System</li>
+            <li>Log Data Subject Request</li>
+            <li>Run Framework Assessment</li>
+            <li>Create Incident Report</li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="card">
+        <h2 className="font-semibold mb-2">Framework Status</h2>
+        {frameworks.map((framework) => (
+          <div className="progress-row" key={framework.name}>
+            <span>{framework.name}</span>
+            <div className="progress-track">
+              <div className="progress-fill" style={{ width: `${framework.progress}%` }} />
+            </div>
+            <span>{framework.progress}% [{framework.gaps} gaps]</span>
+          </div>
+        ))}
+      </section>
+
       <SupabaseConnectionCard />
     </main>
   );
