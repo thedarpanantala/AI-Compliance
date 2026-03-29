@@ -27,12 +27,12 @@ const pageMeta: Record<string, { title: string; description: string }> = {
 };
 
 const onboardingSteps = [
-  "Step 1: Organization Setup (company, industry, regions, auto-regulation detect)",
-  "Step 2: System Discovery (connect/upload, auto-scan, manual add)",
-  "Step 3: Risk Classification (EU AI Act tiers, heat map, high-risk queue)",
-  "Step 4: Gap Analysis & Auto-Generation (missing docs + AI draft + human review)",
-  "Step 5: Team & Workflows (owners, roles, invites)",
-  "Step 6: Go Live (first report, monitoring activation, audit-ready milestone)"
+  "Organization Setup (name, industry, regions → auto-frameworks)",
+  "System Discovery (connect/upload, auto-scan, manual add)",
+  "Risk Classification (EU AI Act tiers, heat map, priority queue)",
+  "Gap Analysis & Auto-Generation (missing docs, AI draft, human checkpoint)",
+  "Team & Workflows (owner assignment, role templates, invites)",
+  "Go Live (first report, monitoring activation)"
 ];
 
 export default function DynamicSectionPage({ params }: { params: { slug: string[] } }) {
@@ -42,17 +42,46 @@ export default function DynamicSectionPage({ params }: { params: { slug: string[
     description: "Section under construction with the new cockpit IA structure."
   };
 
+  const showOnboarding = slug === "getting-started/guided-onboarding";
+  const showEmptyState = slug === "incidents/regulatory-reporting";
+
   return (
     <main className="space-y-4">
       <h1 className="text-2xl font-bold">{meta.title}</h1>
       <p className="muted">{meta.description}</p>
 
-      {slug === "getting-started/guided-onboarding" && (
+      {showOnboarding && (
+        <section className="card space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">Onboarding Flow</h2>
+            <span className="muted text-sm">Last saved 2m ago</span>
+          </div>
+          <div className="step-grid">
+            {onboardingSteps.map((step, index) => (
+              <div key={step} className={index < 2 ? "step-item done" : "step-item"}>
+                <span className="step-badge">{index < 2 ? "✓" : index + 1}</span>
+                <span>{step}</span>
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-2 max-w-lg">
+            <label className="text-sm font-medium">Company Name <span className="danger">*</span></label>
+            <input className="global-search" placeholder="Enter company name" />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button className="ghost-btn">Save Draft</button>
+            <button className="ghost-btn">Continue</button>
+          </div>
+        </section>
+      )}
+
+      {showEmptyState && (
         <section className="card">
-          <h2 className="font-semibold mb-2">Onboarding Flow (6 Steps)</h2>
-          <ol className="action-list">
-            {onboardingSteps.map((step) => <li key={step}>{step}</li>)}
-          </ol>
+          <div className="empty-state">
+            <p className="font-semibold">No items found</p>
+            <p className="muted">No reportable regulatory breaches detected for this period.</p>
+            <button className="ghost-btn mt-2">Create Incident Report</button>
+          </div>
         </section>
       )}
     </main>
