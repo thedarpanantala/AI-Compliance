@@ -12,10 +12,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Nav />
           <div className="content-shell">
             <header className="top-header">
-              <input className="global-search" placeholder="Search systems, controls, incidents…" />
+              <input className="global-search" placeholder="Search licenses, controls, incidents, documents..." />
               <div className="header-right">
                 <button className="ghost-btn" aria-label="notifications">🔔 <span className="danger">3 urgent</span></button>
-                <button className="ghost-btn">Darpan</button>
+                <button className="ghost-btn">Darpan Antala</button>
               </div>
             </header>
             <div className="breadcrumb-wrap"><Breadcrumbs /></div>

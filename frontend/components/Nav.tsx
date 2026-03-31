@@ -8,16 +8,15 @@ type NavItem = { href: string; label: string };
 type NavSection = { icon: string; title: string; items: NavItem[] };
 
 const navSections: NavSection[] = [
-  { icon: "🚀", title: "GETTING STARTED", items: [{ href: "/getting-started/quick-setup-wizard", label: "Quick Setup Wizard" }, { href: "/getting-started/system-discovery", label: "System Discovery" }, { href: "/getting-started/guided-onboarding", label: "Guided Onboarding" }] },
-  { icon: "🏠", title: "HOME", items: [{ href: "/", label: "Executive Dashboard" }, { href: "/home/ai-agent-insights", label: "AI Agent Insights" }, { href: "/home/global-intelligence", label: "Global Intelligence" }] },
-  { icon: "🤖", title: "AI GOVERNANCE", items: [{ href: "/ai-inventory", label: "AI Systems Inventory" }, { href: "/ai-governance/risk-classification", label: "Risk Classification" }, { href: "/ai-governance/impact-assessments", label: "Impact Assessments" }, { href: "/ai-governance/deployment-tracking", label: "Deployment Tracking" }] },
-  { icon: "🔒", title: "PRIVACY & DATA", items: [{ href: "/privacy/processing-records", label: "Processing Records (ROPA)" }, { href: "/privacy/data-subject-requests", label: "Data Subject Requests" }, { href: "/privacy/privacy-by-design", label: "Privacy by Design" }] },
-  { icon: "⚖️", title: "FRAMEWORK COMPLIANCE", items: [{ href: "/compliance", label: "Active Frameworks" }, { href: "/controls", label: "Control Library" }, { href: "/jurisdiction-bridge", label: "Cross-Framework Mappings" }, { href: "/compliance/gap-analysis", label: "Gap Analysis" }] },
-  { icon: "🌍", title: "EXPORT & TRADE", items: [{ href: "/export-trade/export-intelligence", label: "Export Intelligence" }, { href: "/export-trade/multi-jurisdiction-rules", label: "Multi-Jurisdiction Rules" }, { href: "/manufacturing", label: "Factory Ops" }, { href: "/export-trade/global-bridge", label: "Global Bridge" }] },
-  { icon: "🔔", title: "INCIDENTS & BREACHES", items: [{ href: "/incidents/incident-logging", label: "Incident Logging" }, { href: "/incidents/breach-assessment", label: "Breach Assessment" }, { href: "/incidents/regulatory-reporting", label: "Regulatory Reporting" }] },
-  { icon: "📁", title: "DOCUMENTS & EVIDENCE", items: [{ href: "/documents/document-vault", label: "Document Vault" }, { href: "/evidence", label: "Evidence Repository" }, { href: "/artifacts", label: "Auto-Generated Artifacts" }, { href: "/workflows", label: "Workflows" }] },
-  { icon: "📊", title: "REPORTING", items: [{ href: "/reporting/compliance-dashboards", label: "Compliance Dashboards" }, { href: "/reporting/automated-reports", label: "Automated Reports" }, { href: "/reporting/audit-trails", label: "Audit Trails" }] },
-  { icon: "⚙️", title: "SETTINGS", items: [{ href: "/settings/organization-profile", label: "Organization Profile" }, { href: "/settings/users-roles", label: "Users & Roles" }, { href: "/settings/integrations", label: "Integrations" }] }
+  { icon: "🏠", title: "OVERVIEW", items: [{ href: "/", label: "Dashboard" }, { href: "/overview/my-compliance", label: "My Compliance" }] },
+  { icon: "🤖", title: "AI GOVERNANCE", items: [{ href: "/try", label: "AI Agent" }, { href: "/ai-inventory", label: "AI Systems" }, { href: "/ai-governance/ai-assessment", label: "AI Assessment" }, { href: "/ai-governance/ai-architecture", label: "AI Architecture" }] },
+  { icon: "🔒", title: "PRIVACY & DATA", items: [{ href: "/privacy/ropa", label: "ROPA" }, { href: "/privacy/data-subjects", label: "Data Subjects" }, { href: "/privacy/dpia", label: "DPIA" }, { href: "/privacy/privacy-by-design", label: "Privacy by Design" }] },
+  { icon: "🚨", title: "INCIDENTS", items: [{ href: "/incidents/incidents", label: "Incidents" }, { href: "/incidents/breaches", label: "Breaches" }, { href: "/incidents/reports", label: "Reports" }] },
+  { icon: "✅", title: "COMPLIANCE", items: [{ href: "/compliance", label: "Frameworks" }, { href: "/controls", label: "Controls" }, { href: "/compliance/gap-analysis", label: "Gap Analysis" }, { href: "/jurisdiction-bridge", label: "Mappings" }] },
+  { icon: "📁", title: "DOCUMENTS", items: [{ href: "/documents/document-vault", label: "Document Vault" }, { href: "/evidence", label: "Evidence" }, { href: "/workflows", label: "Workflows" }] },
+  { icon: "🌍", title: "EXPORT & TRADE", items: [{ href: "/export-trade/export-intelligence", label: "Export Intelligence" }, { href: "/export-trade/global-bridge", label: "Global Bridge" }, { href: "/export-trade/shipments", label: "Shipments" }] },
+  { icon: "📈", title: "REPORTS", items: [{ href: "/reporting/compliance-dashboards", label: "Dashboards" }, { href: "/reporting/generate-report", label: "Generate Report" }, { href: "/reporting/audit-trails", label: "Audit Trail" }] },
+  { icon: "⚙️", title: "SETTINGS", items: [{ href: "/settings/organization", label: "Organization" }, { href: "/settings/users-roles", label: "Users & Roles" }, { href: "/settings/integrations", label: "Integrations" }, { href: "/settings/notifications", label: "Notifications" }, { href: "/settings/help-support", label: "Help & Support" }] }
 ];
 
 export function Nav() {
@@ -27,8 +26,8 @@ export function Nav() {
   return (
     <aside className={collapsed ? "sidebar-shell collapsed" : "sidebar-shell"}>
       <div className="brand-panel">
-        <div className="brand-title">aic Privacy Cockpit</div>
-        {!collapsed && <div className="brand-subtitle">AI Compliance Automation for Regulated Industries</div>}
+        <div className="brand-title">SHASIT</div>
+        {!collapsed && <div className="brand-subtitle">Automated Compliance Intelligence</div>}
         <button className="collapse-btn" onClick={() => setCollapsed((value) => !value)}>{collapsed ? "»" : "«"}</button>
       </div>
       <nav className="sidebar-nav">

@@ -1,89 +1,57 @@
 const pageMeta: Record<string, { title: string; description: string }> = {
-  "getting-started/quick-setup-wizard": { title: "Quick Setup Wizard", description: "Step-by-step setup to configure organization profile, regions, and baseline frameworks." },
-  "getting-started/system-discovery": { title: "System Discovery", description: "Connect sources, auto-scan AI assets, and validate discovered systems." },
-  "getting-started/guided-onboarding": { title: "Guided Onboarding", description: "Six-step onboarding flow from organization setup to go-live milestone." },
-  "home/ai-agent-insights": { title: "AI Agent Insights", description: "Track automation suggestions, adoption, and generated compliance outcomes." },
-  "home/global-intelligence": { title: "Global Intelligence", description: "Monitor regulatory updates and jurisdiction-specific compliance insights." },
-  "ai-governance/risk-classification": { title: "Risk Classification", description: "Auto-classify systems into risk tiers with visual prioritization." },
-  "ai-governance/impact-assessments": { title: "Impact Assessments", description: "Run and store impact assessments with reviewer checkpoints." },
-  "ai-governance/deployment-tracking": { title: "Deployment Tracking", description: "Track deployment state, monitoring hooks, and approval gates." },
-  "privacy/processing-records": { title: "Processing Records (ROPA)", description: "Maintain records of processing activities across data flows." },
-  "privacy/data-subject-requests": { title: "Data Subject Requests", description: "Manage DSR intake, SLA tracking, and response workflows." },
-  "privacy/privacy-by-design": { title: "Privacy by Design", description: "Apply privacy controls early with templates and default safeguards." },
-  "compliance/gap-analysis": { title: "Gap Analysis", description: "Identify missing controls, prioritize risk, and assign remediation owners." },
-  "export-trade/export-intelligence": { title: "Export Intelligence", description: "Get market access compliance insights for target export regions." },
-  "export-trade/multi-jurisdiction-rules": { title: "Multi-Jurisdiction Rules", description: "Compare obligations across EU, India, US, and other regions." },
-  "export-trade/global-bridge": { title: "Global Bridge", description: "Bridge control mappings and evidence between target jurisdictions." },
-  "incidents/incident-logging": { title: "Incident Logging", description: "Capture incidents with chronology, severity, and ownership." },
-  "incidents/breach-assessment": { title: "Breach Assessment", description: "Assess incidents for breach thresholds and response obligations." },
-  "incidents/regulatory-reporting": { title: "Regulatory Reporting", description: "Prepare regulator-ready incident reports with audit trails." },
-  "documents/document-vault": { title: "Document Vault", description: "Securely store policies, procedures, and versioned compliance docs." },
-  "reporting/compliance-dashboards": { title: "Compliance Dashboards", description: "Executive and operational dashboards for risk and readiness tracking." },
-  "reporting/automated-reports": { title: "Automated Reports", description: "Generate scheduled compliance reports with approval workflow." },
-  "reporting/audit-trails": { title: "Audit Trails", description: "View immutable logs of assessments, approvals, and evidence changes." },
-  "settings/organization-profile": { title: "Organization Profile", description: "Configure legal entity, industry profile, and operating regions." },
-  "settings/users-roles": { title: "Users & Roles", description: "Manage role-based access and responsibility assignments." },
-  "settings/integrations": { title: "Integrations", description: "Connect source systems, identity providers, and messaging tools." }
+  "overview/my-compliance": { title: "My Compliance", description: "Your personalized compliance obligations, health score, and priority queue." },
+  "ai-governance/ai-assessment": { title: "AI Assessment", description: "Run structured AI risk and framework assessments with scheduling." },
+  "ai-governance/ai-architecture": { title: "AI Architecture", description: "Document model architecture, data pipelines, and deployment controls." },
+  "privacy/ropa": { title: "ROPA", description: "Record of Processing Activities for DPDPA/GDPR aligned operations." },
+  "privacy/data-subjects": { title: "Data Subjects", description: "Track requests, SLA status, and fulfillment evidence." },
+  "privacy/dpia": { title: "DPIA", description: "Data Protection Impact Assessments with AI-assisted drafting." },
+  "privacy/privacy-by-design": { title: "Privacy by Design", description: "Embed privacy controls at design-time with policy templates." },
+  "incidents/incidents": { title: "Incidents", description: "Log incidents with severity, owners, timelines, and remediation." },
+  "incidents/breaches": { title: "Breaches", description: "Assess and manage breach notifications across jurisdictions." },
+  "incidents/reports": { title: "Reports", description: "Regulatory reporting package builder for incidents and breaches." },
+  "compliance/gap-analysis": { title: "Gap Analysis", description: "Identify control deficiencies and assign remediation tasks." },
+  "documents/document-vault": { title: "Document Vault", description: "Versioned repository of compliance evidence and generated documents." },
+  "export-trade/export-intelligence": { title: "Export Intelligence", description: "Country-specific export compliance requirements and alerts." },
+  "export-trade/global-bridge": { title: "Global Bridge", description: "Cross-market obligations mapping for EU/US/UK expansion." },
+  "export-trade/shipments": { title: "Shipments", description: "Shipment-level compliance checks and export document readiness." },
+  "reporting/compliance-dashboards": { title: "Dashboards", description: "Executive and operational compliance dashboards." },
+  "reporting/generate-report": { title: "Generate Report", description: "AI-assisted report generation with human approval checkpoints." },
+  "reporting/audit-trails": { title: "Audit Trail", description: "Tamper-evident activity trail for audits and investigations." },
+  "settings/organization": { title: "Organization", description: "Org profile, industry mapping, and regional operations setup." },
+  "settings/users-roles": { title: "Users & Roles", description: "Role-based access model (Admin, DPO, Auditor, Executive)." },
+  "settings/integrations": { title: "Integrations", description: "Connect GitHub, MLflow, Databricks, and enterprise systems." },
+  "settings/notifications": { title: "Notifications", description: "Configure alerts for deadlines, incidents, and regulatory updates." },
+  "settings/help-support": { title: "Help & Support", description: "Knowledge base, guides, and support channels." }
 };
 
-const onboardingSteps = [
-  "Organization Setup (name, industry, regions → auto-frameworks)",
-  "System Discovery (connect/upload, auto-scan, manual add)",
-  "Risk Classification (EU AI Act tiers, heat map, priority queue)",
-  "Gap Analysis & Auto-Generation (missing docs, AI draft, human checkpoint)",
-  "Team & Workflows (owner assignment, role templates, invites)",
-  "Go Live (first report, monitoring activation)"
+const industries = [
+  "Healthcare & Medical", "Textile & Apparel", "Manufacturing & Engineering", "Chemical Industry", "Food & Agriculture", "Electronics & IT"
 ];
+
+const roles = ["Admin", "Compliance Officer", "DPO", "Executive", "Auditor"];
 
 export default function DynamicSectionPage({ params }: { params: { slug: string[] } }) {
   const slug = params.slug.join("/");
-  const meta = pageMeta[slug] ?? {
-    title: slug.replace(/-/g, " "),
-    description: "Section under construction with the new cockpit IA structure."
-  };
-
-  const showOnboarding = slug === "getting-started/guided-onboarding";
-  const showEmptyState = slug === "incidents/regulatory-reporting";
+  const meta = pageMeta[slug] ?? { title: slug.replace(/-/g, " "), description: "SHASIT section scaffold ready for feature wiring." };
 
   return (
     <main className="space-y-4">
-      <h1 className="text-2xl font-bold">{meta.title}</h1>
+      <h1 className="page-title">{meta.title}</h1>
       <p className="muted">{meta.description}</p>
 
-      {showOnboarding && (
-        <section className="card space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Onboarding Flow</h2>
-            <span className="muted text-sm">Last saved 2m ago</span>
-          </div>
-          <div className="step-grid">
-            {onboardingSteps.map((step, index) => (
-              <div key={step} className={index < 2 ? "step-item done" : "step-item"}>
-                <span className="step-badge">{index < 2 ? "✓" : index + 1}</span>
-                <span>{step}</span>
-              </div>
-            ))}
-          </div>
-          <div className="grid gap-2 max-w-lg">
-            <label className="text-sm font-medium">Company Name <span className="danger">*</span></label>
-            <input className="global-search" placeholder="Enter company name" />
-          </div>
-          <div className="flex justify-end gap-2">
-            <button className="ghost-btn">Save Draft</button>
-            <button className="ghost-btn">Continue</button>
-          </div>
-        </section>
-      )}
+      <section className="card">
+        <h2 className="card-title">Industry Coverage</h2>
+        <div className="grid md:grid-cols-2 gap-2 mt-3">
+          {industries.map((industry) => <span key={industry}>• {industry}</span>)}
+        </div>
+      </section>
 
-      {showEmptyState && (
-        <section className="card">
-          <div className="empty-state">
-            <p className="font-semibold">No items found</p>
-            <p className="muted">No reportable regulatory breaches detected for this period.</p>
-            <button className="ghost-btn mt-2">Create Incident Report</button>
-          </div>
-        </section>
-      )}
+      <section className="card">
+        <h2 className="card-title">Role Visibility</h2>
+        <div className="grid md:grid-cols-5 gap-2 mt-3">
+          {roles.map((role) => <span key={role} className="badge-info">{role}</span>)}
+        </div>
+      </section>
     </main>
   );
 }
