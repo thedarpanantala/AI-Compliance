@@ -8,3 +8,5 @@ dist/
 coverage/
 pytest_cache/
 playwright-report/
+venv/
+backend/venv/
