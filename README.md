@@ -1,6 +1,12 @@
-# AI Compliance & Audit Automation Platform
+# SHASIT - Automated Compliance Intelligence Platform
 
-Production-ready monorepo for a multi-tenant RegTech SaaS platform focused on AI governance, compliance, risk documentation, and audit automation.
+Production-ready monorepo for SHASIT ("One Who Guides"), a multi-tenant RegTech SaaS platform focused on AI governance, compliance, risk documentation, and audit automation.
+
+
+## Brand
+- **Name:** SHASIT (शासित)
+- **Tagline:** Automated Compliance Intelligence
+- **Primary Market:** India
 
 ## Product Scope
 - AI system registration, dataset/model metadata inventory
