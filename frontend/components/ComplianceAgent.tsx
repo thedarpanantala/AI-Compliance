@@ -9,11 +9,11 @@ type Message = {
 };
 
 const SUGGESTED_PROMPTS = [
-  "What am I missing for EU AI Act?",
+  "What mandatory licenses do I need for Textile in India?",
+  "Draft a task for my FSSAI renewal",
+  "What am I missing for EU AI Act compliance?",
   "Which controls are currently failing?",
   "Draft my clinical risk assessment",
-  "What does DPDPA require for this system?",
-  "Create tasks for all failing controls",
 ];
 
 interface ComplianceAgentProps {
@@ -112,6 +112,18 @@ export function ComplianceAgent({ systemId, orgId, userId, standalone = false }:
                 }`}
               >
                 {msg.content}
+                {msg.actions?.some(a => a.tool === 'generate_document') && (
+                  <div className="mt-3 pt-3 border-t border-indigo-100 flex flex-col gap-2">
+                    <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Action Available</p>
+                    <a 
+                      href="/vault" 
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all group"
+                    >
+                      <span className="font-bold text-xs">View Generated Artifact</span>
+                      <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </a>
+                  </div>
+                )}
               </div>
               {msg.actions?.map((action, j) => (
                 <div key={j} className="text-xs text-green-700 border border-green-100 bg-green-50 rounded px-2 py-1">

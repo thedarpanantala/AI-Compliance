@@ -1,0 +1,58 @@
+# Industry-specific Compliance Categorization (Mandatory India Licenses)
+
+COMPLIANCE_DATA = {
+    "healthcare": [
+        {"name": "NABH Accreditation",           "type": "licence",    "freq": "annual", "mandatory": True},
+        {"name": "AERB Radiation Safety Licence", "type": "licence",    "freq": "annual", "mandatory": True},
+        {"name": "Clinical Establishment Registration", "type": "licence", "freq": "annual", "mandatory": True},
+        {"name": "Bio-Medical Waste Authorization", "type": "licence",    "freq": "annual", "mandatory": True},
+        {"name": "Fire NOC",                      "type": "licence",    "freq": "annual", "mandatory": True},
+        {"name": "PCPNDT Registration",           "type": "licence",    "freq": "annual", "mandatory": True},
+        {"name": "Pharmacy Licence (Form 20/21)", "type": "licence",    "freq": "annual", "mandatory": True},
+        {"name": "Drug Expiry Check Records",     "type": "evidence",   "freq": "monthly", "mandatory": True},
+        {"name": "BMW Disposal Records",          "type": "evidence",   "freq": "monthly", "mandatory": True},
+    ],
+    "textile": [
+        {"name": "MSME/Udyam Registration",      "type": "registration", "freq": "perpetual", "mandatory": True},
+        {"name": "GST Registration",             "type": "registration", "freq": "perpetual", "mandatory": True},
+        {"name": "Factory License",              "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Pollution Consent (CTE/CTO)",   "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "BIS Certification (Protective)", "type": "licence",    "freq": "annual",    "mandatory": True},
+        {"name": "Textile Committee Registration","type": "registration", "freq": "perpetual", "mandatory": True},
+        {"name": "Effluent Treatment Records",   "type": "evidence",     "freq": "monthly",   "mandatory": True},
+    ],
+    "manufacturing": [
+        {"name": "Udyam Registration",           "type": "registration", "freq": "perpetual", "mandatory": True},
+        {"name": "GST Registration",             "type": "registration", "freq": "perpetual", "mandatory": True},
+        {"name": "Factory License (Factories Act)", "type": "licence",    "freq": "annual",    "mandatory": True},
+        {"name": "Pollution CTO",                "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Boiler Registration",          "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Explosives License (PESO)",    "type": "licence",      "freq": "annual",    "mandatory": False},
+        {"name": "Electrical Safety Certificate", "type": "inspection",  "freq": "annual",    "mandatory": True},
+        {"name": "Machinery Maintenance Logs",   "type": "evidence",     "freq": "monthly",   "mandatory": True},
+    ],
+    "chemical": [
+        {"name": "Factory License",              "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Pollution CTO",                "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Hazardous Waste Authorization", "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Explosives License (PESO)",    "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Poison License",               "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Safety Data Sheet (SDS) Review", "type": "evidence",   "freq": "monthly",   "mandatory": True},
+        {"name": "Emissions Monitoring Log",     "type": "evidence",     "freq": "monthly",   "mandatory": True},
+    ],
+    "food_processing": [
+        {"name": "FSSAI Central/State License",  "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "GST Registration",             "type": "registration", "freq": "perpetual", "mandatory": True},
+        {"name": "Pollution Consent",            "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Agmark Registration",          "type": "registration", "freq": "perpetual", "mandatory": False},
+        {"name": "Processed Food Quality Reports", "type": "evidence",   "freq": "monthly",   "mandatory": True},
+        {"name": "Hygiene & Sanitation Logs",   "type": "evidence",     "freq": "monthly",   "mandatory": True},
+    ],
+    "electronics": [
+        {"name": "BIS CRS Registration",         "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "BIS ISI Mark",                 "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "Pollution Consent",            "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "E-Waste Authorization",       "type": "licence",      "freq": "annual",    "mandatory": True},
+        {"name": "RoHS Compliance Reports",      "type": "evidence",     "freq": "quarterly", "mandatory": True},
+    ],
+}

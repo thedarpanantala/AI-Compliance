@@ -706,3 +706,462 @@ curl.exe http://localhost:8000/api/ai-systems -H "Authorization: Bearer TOKEN"
 □ Score reflects actual gap severity (Class III with no consent = 0%, not 50%)
 □ Distinguishes critical vs warning failures
 ```
+
+
+
+TECHNICAL IMPLEMENTATION PROMPT: Missing Core Modules
+Context: The aic Privacy Cockpit platform has core navigation and onboarding completed. Now implement the three critical backend systems that deliver the "automation" value proposition: (1) Export Certification Intelligence, (2) Industry-Specific Workflow Automation, and (3) AI-Powered Document Generation.
+MODULE 1: EXPORT & TRADE INTELLIGENCE SYSTEM ("Global Bridge")
+1.1 Database Schema Expansion
+sql
+Copy
+-- New Table: export_certifications
+CREATE TABLE export_certifications (
+    id UUID PRIMARY KEY,
+    certification_code VARCHAR(50) UNIQUE, -- e.g., "CE-MDR-2017", "FDA-510k", "BIS-ISI"
+    name VARCHAR(255), -- "CE Marking (Medical Devices)", "FDA 510(k) Clearance"
+    issuing_authority VARCHAR(100), -- "European Commission", "US FDA"
+    jurisdiction VARCHAR(100), -- "EU", "USA", "UK", "Australia"
+    industry_scope JSONB, -- ["Medical Device", "Textile", "Food Processing"]
+    risk_classification_required BOOLEAN,
+    mandatory_for_ai BOOLEAN DEFAULT false,
+    renewal_period_months INT,
+    estimated_cost_usd_range JSONB, -- {"min": 5000, "max": 50000}
+    documentation_checklist JSONB, -- Array of required doc IDs
+    created_at TIMESTAMP
+);
+
+-- New Table: organization_export_profiles
+CREATE TABLE organization_export_profiles (
+    id UUID PRIMARY KEY,
+    org_id UUID REFERENCES organizations(id),
+    target_markets JSONB, -- ["EU", "USA", "UK", "Australia", "ASEAN"]
+    product_categories JSONB, -- ["SaMD", "Textile-Garments", "Processed-Foods"]
+    active_certifications JSONB, -- Array of certification IDs with expiry dates
+    compliance_gaps JSONB, -- AI-generated gap analysis
+    next_renewal_date DATE,
+    global_bridge_status VARCHAR(50) -- "Compliant", "Action Required", "Not Started"
+);
+
+-- New Table: jurisdiction_requirements
+CREATE TABLE jurisdiction_requirements (
+    id UUID PRIMARY KEY,
+    country_code VARCHAR(2),
+    regulation_name VARCHAR(255), -- "EU AI Act", "FDA AI/ML Guidance"
+    ai_system_scope TEXT, -- Description of what qualifies
+    mandatory_registration BOOLEAN,
+    data_localization_required BOOLEAN,
+    third_party_audit_required BOOLEAN,
+    timeline_to_comply_days INT,
+    penalty_for_non_compliance TEXT
+);
+1.2 Logic Implementation: "Global Bridge" Assessment Engine
+Feature: When user selects target export markets in onboarding (Step 1) or settings,系统自动计算合规路径。
+Algorithm:
+Python
+Copy
+def calculate_export_compliance_path(org_id, target_markets, product_categories):
+    """
+    Returns compliance roadmap for exporting AI-enabled products
+    """
+    gaps = []
+    required_certs = []
+    
+    for market in target_markets:
+        # EU Logic
+        if market == "EU":
+            if "Medical" in product_categories:
+                required_certs.append({
+                    "cert": "CE-MDR-2017",
+                    "mandatory": True,
+                    "prerequisite": "ISO-13485",
+                    "ai_specific_addendum": "EU AI Act Article 6 High-Risk"
+                })
+            if "Textile" in product_categories:
+                required_certs.append({
+                    "cert": "CE-Textile-Regulation",
+                    "mandatory": True,
+                    "ai_component": "Chemical compliance labeling"
+                })
+        
+        # USA Logic
+        elif market == "USA":
+            if "Medical-AI" in product_categories:
+                required_certs.append({
+                    "cert": "FDA-510k",
+                    "pathway": "Software as Medical Device (SaMD)",
+                    "ai_addendum": "FDA AI/ML-Based Software as Medical Device Guidance"
+                })
+        
+        # UK Logic (Post-Brexit)
+        elif market == "UK":
+            required_certs.append({
+                "cert": "UKCA-Marking",
+                "transitional_note": "CE marking accepted until June 2023"
+            })
+    
+    # Cross-reference with existing India licenses
+    india_licenses = get_org_india_licenses(org_id)
+    gaps = identify_recognition_gaps(india_licenses, required_certs)
+    
+    return {
+        "target_markets": target_markets,
+        "required_certifications": required_certs,
+        "gaps": gaps,
+        "estimated_timeline_days": sum([cert['estimated_days'] for cert in required_certs]),
+        "estimated_cost_usd": calculate_cost(required_certs),
+        "action_items": generate_action_items(gaps)
+    }
+1.3 UI Components to Build
+A. Export Intelligence Dashboard
+Map Visualization: World map showing target markets (green = compliant, yellow = in-progress, red = blocked)
+Certification Timeline: Gantt chart showing application → review → approval → renewal dates
+Cost Calculator: Running total of estimated certification costs based on selected markets
+Document Checklist per Market:
+EU: Technical Documentation, Clinical Evaluation, Post-Market Surveillance plan
+USA: 510(k) Submission, Predicative Determination, Software Documentation
+UK: UKCA Technical File, UK Responsible Person appointment letter
+B. "Global Bridge" Wizard (New Onboarding Step 3.5)
+plain
+Copy
+Step 3.5: Export Markets Selection
+├─ Select Target Markets: [Multi-select dropdown: EU, USA, UK, Australia, ASEAN, Middle East]
+├─ Product Categories: [Auto-populated from Step 1 industry selection]
+├─ AI Component Type: [Standalone AI, AI-Enabled Hardware, AI-as-a-Service]
+└─ Auto-Generated Output:
+    ├─ "To export to EU + USA, you need:"
+    ├─ 1. CE Marking (Medical Devices) + EU AI Act compliance
+    ├─ 2. FDA 510(k) clearance + Algorithm Change Control Plan
+    ├─ 3. Gap Analysis: Your current BIS license is not recognized in EU
+    └─ [Generate Export Roadmap] [Schedule Consultation]
+1.4 Integration Points
+Connect with existing India License Database: Map BIS/FSSAI/CDSCO licenses to international equivalents (e.g., BIS-ISI → CE marking equivalence agreements)
+AI Agent Integration: Prompt: "Given this organization's Textile industry + EU export goal, what additional certifications are needed beyond their current BIS licenses?"
+MODULE 2: INDUSTRY-SPECIFIC WORKFLOW ENGINE
+2.1 Workflow Template Database
+sql
+Copy
+-- New Table: workflow_templates
+CREATE TABLE workflow_templates (
+    id UUID PRIMARY KEY,
+    template_code VARCHAR(50) UNIQUE,
+    name VARCHAR(255),
+    description TEXT,
+    industry VARCHAR(100), -- "Textile", "Chemical", "Healthcare", "Food Processing"
+    compliance_framework VARCHAR(100), -- "DPDPA", "EU AI Act", "NABH", "FSSAI"
+    trigger_type VARCHAR(50), -- "Scheduled", "Event-Based", "Manual"
+    trigger_config JSONB, -- {"frequency": "monthly", "day": 1} or {"event": "new_ai_system"}
+    steps JSONB, -- Array of step objects
+    approval_required BOOLEAN,
+    auto_execute BOOLEAN DEFAULT false,
+    created_by UUID REFERENCES users(id)
+);
+
+-- Example Template Data:
+-- "Textile_Monthly_Compliance_Review"
+-- "Chemical_Incident_Response"
+-- "Healthcare_DSR_Fulfillment"
+-- "Food_Processing_Label_Update"
+2.2 Industry-Specific Workflow Logic
+A. Textile Industry Workflows
+JSON
+Copy
+{
+  "template_code": "TEXTILE_MONTHLY_REVIEW",
+  "name": "Monthly Textile Compliance Review",
+  "industry": "Textile",
+  "trigger": "Scheduled (1st of month)",
+  "steps": [
+    {
+      "step_order": 1,
+      "title": "BIS License Status Check",
+      "action": "api_call",
+      "api_endpoint": "/api/v1/india-licenses/status",
+      "condition": "check_expiry_within_days(30)",
+      "auto_execute": true,
+      "output_variable": "expiring_licenses"
+    },
+    {
+      "step_order": 2,
+      "title": "Chemical Inventory Compliance",
+      "action": "form_submission",
+      "form_id": "chemical_usage_log",
+      "assignee_role": "Factory_Manager",
+      "condition": "if_chemical_usage > threshold",
+      "due_hours": 72
+    },
+    {
+      "step_order": 3,
+      "title": "Export Shipment Documentation",
+      "action": "document_generation",
+      "template": "textile_export_certificate",
+      "condition": "pending_shipments > 0",
+      "auto_execute": true
+    },
+    {
+      "step_order": 4,
+      "title": "Human Review & Approval",
+      "action": "human_approval",
+      "assignee_role": "Compliance_Officer",
+      "condition": "always",
+      "escalation_hours": 48
+    }
+  ]
+}
+B. Chemical Industry Workflows
+JSON
+Copy
+{
+  "template_code": "CHEMICAL_SPILL_RESPONSE",
+  "name": "Chemical Spill/Incident Response",
+  "industry": "Chemical",
+  "trigger": "Event-Based (Incident Logged)",
+  "steps": [
+    {
+      "step_order": 1,
+      "title": "Immediate Containment Verification",
+      "action": "checklist",
+      "items": ["Spill contained", "Area evacuated", "PPE donned"],
+      "assignee_role": "Safety_Officer",
+      "due_hours": 1
+    },
+    {
+      "step_order": 2,
+      "title": "Regulatory Notification Assessment",
+      "action": "ai_decision",
+      "logic": "if spill_volume > 100L OR chemical_tier == 'hazardous_a' then notify_pcb = true",
+      "auto_execute": true
+    },
+    {
+      "step_order": 3,
+      "title": "PCB/SPCB Filing",
+      "action": "document_generation",
+      "template": "pcb_incident_report",
+      "condition": "notify_pcb == true",
+      "jurisdiction_variable": "state_location"
+    },
+    {
+      "step_order": 4,
+      "title": "Root Cause Analysis",
+      "action": "form_submission",
+      "form_id": "rca_form",
+      "assignee_role": "Plant_Manager",
+      "due_hours": 72
+    }
+  ]
+}
+C. Healthcare AI Workflows (NABH/CDSCO)
+JSON
+Copy
+{
+  "template_code": "CLINICAL_AI_VALIDATION",
+  "name": "Clinical AI Validation Protocol",
+  "industry": "Healthcare",
+  "trigger": "Manual (New AI System Registration)",
+  "steps": [
+    {
+      "step_order": 1,
+      "title": "Algorithm Validation Documentation",
+      "action": "document_upload",
+      "required_docs": ["Validation_Report", "Clinical_Performance_Data", "Bias_Assessment"],
+      "assignee_role": "Clinical_Lead"
+    },
+    {
+      "step_order": 2,
+      "title": "Ethics Committee Approval",
+      "action": "approval_workflow",
+      "approver_role": "Ethics_Committee_Chair",
+      "escalation_days": 14
+    },
+    {
+      "step_order": 3,
+      "title": "NABH AI Addendum Generation",
+      "action": "ai_document_generation",
+      "template": "nabh_ai_validation_protocol",
+      "input_variables": ["system_name", "risk_class", "clinical_domain"]
+    },
+    {
+      "step_order": 4,
+      "title": "Post-Implementation Monitoring Setup",
+      "action": "api_call",
+      "api_endpoint": "/api/v1/monitoring/activate",
+      "parameters": {"alert_threshold": "accuracy_drop_5_percent"}
+    }
+  ]
+}
+2.3 Workflow Builder UI
+Interface Requirements:
+Visual Workflow Builder: Drag-and-drop interface (similar to Zapier/Make) with nodes for:
+Triggers (Schedule, Webhook, Manual, AI Detection)
+Actions (Send Email, Generate Doc, API Call, Human Task)
+Conditions (If/Else logic based on data fields)
+Delays (Wait X days/hours)
+Template Library: Pre-built templates per industry (Textile, Chemical, Healthcare, Food, Electronics)
+Testing Mode: "Simulate Workflow" button that runs with mock data to test logic
+Execution Logs: Audit trail showing which step ran when, by whom, with what result
+MODULE 3: AI-POWERED DOCUMENT ARTIFACT GENERATION
+3.1 Document Template System
+sql
+Copy
+-- New Table: document_templates
+CREATE TABLE document_templates (
+    id UUID PRIMARY KEY,
+    template_code VARCHAR(50),
+    name VARCHAR(255), -- "NABH AI Validation Protocol", "DPDPA Privacy Notice"
+    description TEXT,
+    applicable_frameworks JSONB, -- ["NABH", "EU AI Act", "DPDPA"]
+    applicable_industries JSONB, -- ["Healthcare", "Textile", "All"]
+    document_type VARCHAR(50), -- "Policy", "Procedure", "Report", "Checklist"
+    file_format VARCHAR(20), -- "PDF", "DOCX", "HTML"
+    template_content TEXT, -- HTML/Markdown with {{variables}}
+    required_inputs JSONB, -- Schema of required data fields
+    ai_generation_prompt TEXT, -- Prompt for LLM to fill gaps
+    version INT DEFAULT 1,
+    is_active BOOLEAN DEFAULT true
+);
+
+-- New Table: generated_documents
+CREATE TABLE generated_documents (
+    id UUID PRIMARY KEY,
+    template_id UUID REFERENCES document_templates(id),
+    org_id UUID REFERENCES organizations(id),
+    generated_by UUID REFERENCES users(id),
+    status VARCHAR(50), -- "Draft", "Under Review", "Approved", "Archived"
+    input_data JSONB, -- Data used to generate
+    ai_generated_content TEXT,
+    human_edited_content TEXT,
+    final_pdf_url VARCHAR(500),
+    approval_chain JSONB, -- Array of approvers and status
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+3.2 Document Templates Required (Minimum Viable Set)
+Healthcare Sector:
+NABH Clinical AI Validation Protocol (for ChestScan AI type systems)
+DPDPA Data Processing Notice (for Patient Portals)
+EU AI Act High-Risk System Record (Article 6 compliance)
+Incident Response Plan (for Healthcare AI failures)
+Algorithm Change Control Log (FDA/CDSCO requirement)
+Textile Sector:
+BIS Compliance Certificate Renewal Application (Auto-filled from license DB)
+Chemical Usage Safety Report (Monthly for PCB compliance)
+Export Textile Quality Certification (for EU/USA shipments)
+Worker Safety Training Record (Factory compliance)
+Chemical Sector:
+Material Safety Data Sheet (MSDS) (AI-generated from chemical inventory)
+Pollution Control Board Incident Report (Pre-filled with spill data)
+Environmental Compliance Report (Quarterly for SPCB)
+Cross-Industry:
+DPDPA Data Subject Request Fulfillment Report (Auto-generated from DSR workflow)
+EU AI Act Conformity Declaration (Based on risk classification)
+Vendor Risk Assessment Questionnaire (AI-customized by vendor type)
+Internal Audit Report Template (Framework-specific checklists)
+3.3 Document Generation Engine Logic
+Workflow:
+Python
+Copy
+def generate_compliance_document(template_code, org_id, ai_system_id=None):
+    # 1. Fetch Template
+    template = get_template(template_code)
+    
+    # 2. Gather Input Data
+    inputs = {}
+    for field in template.required_inputs:
+        if field.source == "database":
+            inputs[field.name] = fetch_from_db(field.table, org_id)
+        elif field.source == "ai_system":
+            inputs[field.name] = fetch_ai_system_data(ai_system_id)
+        elif field.source == "license_db":
+            inputs[field.name] = fetch_license_data(org_id, field.license_type)
+    
+    # 3. Pre-process with AI (if content gaps exist)
+    if template.ai_generation_prompt:
+        llm_prompt = template.ai_generation_prompt.format(**inputs)
+        ai_content = call_llm(llm_prompt)
+        inputs['ai_generated_section'] = ai_content
+    
+    # 4. Render Template
+    html_content = render_template(template.template_content, inputs)
+    
+    # 5. Convert to PDF/DOCX
+    document_url = convert_to_pdf(html_content)
+    
+    # 6. Create Review Task
+    create_approval_task(
+        document_id=new_doc_id,
+        assignee_role="Compliance_Officer",
+        task_title=f"Review generated {template.name}"
+    )
+    
+    return {
+        "document_id": new_doc_id,
+        "status": "Draft - Pending Review",
+        "download_url": document_url,
+        "preview_html": html_content[:500] + "..."
+    }
+3.4 UI for Document Generation
+Interface: "Document Vault" Page
+Layout:
+Left Panel: Template library organized by Industry → Framework → Document Type
+Center Panel: Template preview with variable placeholders highlighted {{Organization_Name}}
+Right Panel: Input form (auto-populated from org profile), AI suggestions box
+Key Features:
+Smart Prefill: When generating "NABH AI Validation" for ChestScan AI v3.1, auto-pull:
+System name, version, risk classification
+Department (Radiology)
+Owner (Dr. Sarah Chen)
+Last assessment date
+Existing control implementations
+AI Gap Filler: If template asks for "Clinical Performance Metrics" and data is missing, show:
+AI suggestion: "Based on similar diagnostic AI systems, expected sensitivity is 94-96%. Use 95% as placeholder?"
+[Accept] [Edit] [Fetch from System]
+Collaborative Editing: Google Docs-style commenting on generated documents
+Compliance Officer can tag Legal team: "@legal review section 4.2"
+Track changes between AI-generated and human-edited versions
+Approval Workflow:
+Draft → Review → Approved → Published (to Document Vault)
+Digital signatures (eSign integration)
+Version control (v1.0, v1.1 with change logs)
+MODULE 4: INTEGRATION SPECIFICATIONS
+4.1 API Endpoints to Implement
+yaml
+Copy
+# Export & Trade
+GET /api/v1/export/compliance-roadmap?org_id={}&markets={}
+POST /api/v1/export/certifications/apply
+GET /api/v1/jurisdictions/requirements?country={}&industry={}
+
+# Workflows
+GET /api/v1/workflows/templates?industry={}
+POST /api/v1/workflows/instances (trigger workflow)
+GET /api/v1/workflows/instances/{id}/status
+PUT /api/v1/workflows/instances/{id}/approve-step
+
+# Documents
+POST /api/v1/documents/generate
+GET /api/v1/documents/templates
+GET /api/v1/documents/{id}/preview
+POST /api/v1/documents/{id}/approve
+GET /api/v1/documents/{id}/download?format=pdf
+4.2 External Integrations Required
+eSign Integration: DocuSign or SignEasy for document approvals
+Cloud Storage: AWS S3 for generated PDF storage with retention policies
+Email/Slack: Workflow notifications (SendGrid, Slack webhooks)
+India License API: Integration with government portals for real-time license status (where available)
+LLM Service: OpenAI GPT-4 or Claude for document content generation (with HIPAA/BAA if healthcare)
+ACCEPTANCE CRITERIA
+Export Module:
+[ ] User can select 3 export markets and see correct certification requirements
+[ ] System correctly identifies that BIS license ≠ CE marking (gap highlighted)
+[ ] Cost calculator shows realistic estimates for CE + FDA certification
+[ ] Map visualization updates as certifications are obtained
+Workflow Module:
+[ ] Textile factory manager receives monthly checklist on 1st of month
+[ ] Chemical spill automatically triggers PCB notification if >100L
+[ ] Healthcare AI validation workflow routes to Ethics Committee
+[ ] Workflow builder allows creation of new template without code
+Document Module:
+[ ] NABH AI Validation Protocol generates in <10 seconds with 90% accurate prefills
+[ ] Human review checkpoint blocks automatic finalization
+[ ] Version control tracks changes between AI draft and final approved doc
+[ ] All documents stored with encryption at rest and audit trail

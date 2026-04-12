@@ -3,32 +3,9 @@ import logging
 from datetime import date
 from celery import shared_task
 from app.db.session import SessionLocal
+from app.core.compliance_data import COMPLIANCE_DATA as COMPLIANCE_CATEGORIES
 
 logger = logging.getLogger(__name__)
-
-COMPLIANCE_CATEGORIES = {
-    "hospital": [
-        # Licences
-        {"name": "NABH Accreditation",           "type": "licence",    "freq": "annual"},
-        {"name": "AERB Radiation Safety Licence", "type": "licence",    "freq": "annual"},
-        {"name": "Clinical Establishment Licence","type": "licence",    "freq": "annual"},
-        {"name": "Blood Bank Licence",            "type": "licence",    "freq": "annual"},
-        {"name": "PCPNDT Registration",           "type": "licence",    "freq": "annual"},
-        {"name": "Pharmacy Licence (Form 20/21)", "type": "licence",    "freq": "annual"},
-        {"name": "Bio-Medical Waste Auth Letter", "type": "licence",    "freq": "annual"},
-        {"name": "Fire NOC",                      "type": "licence",    "freq": "annual"},
-        {"name": "Lift Inspection Certificate",   "type": "inspection", "freq": "annual"},
-        {"name": "Boiler Certificate",            "type": "inspection", "freq": "annual"},
-        # Monthly compliance
-        {"name": "BMW Disposal Records",          "type": "evidence",   "freq": "monthly"},
-        {"name": "Infection Control Audit",       "type": "evidence",   "freq": "monthly"},
-        {"name": "Drug Expiry Check Records",     "type": "evidence",   "freq": "monthly"},
-        {"name": "Emergency Equipment Log",       "type": "evidence",   "freq": "monthly"},
-        # AI systems
-        {"name": "AI System Incident Log Review", "type": "ai_check",  "freq": "monthly"},
-        {"name": "Clinical AI Validation Status", "type": "ai_check",  "freq": "quarterly"},
-    ]
-}
 
 async def check_item_status(org_id: str, item: dict, check_date: date, db):
     # Stub: Randomly return statuses for demonstration

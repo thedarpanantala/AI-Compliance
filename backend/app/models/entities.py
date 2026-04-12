@@ -442,6 +442,201 @@ class OnboardingSession(Base, TenantTimestampMixin):
     __tablename__ = "onboarding_sessions"
     
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    country_code: Mapped[str] = mapped_column(String(2), index=True)
+    regulation_name: Mapped[str] = mapped_column(String(255))
+    ai_system_scope: Mapped[str | None] = mapped_column(Text, nullable=True)
+    mandatory_registration: Mapped[bool] = mapped_column(Boolean, default=False)
+    data_localization_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    third_party_audit_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    timeline_to_comply_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    penalty_for_non_compliance: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    pollution_category: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    primary_sector: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    is_export_oriented: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class ProcessLine(Base, TenantTimestampMixin):
+    __tablename__ = "process_lines"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    factory_site_id: Mapped[str] = mapped_column(ForeignKey("factory_sites.id"))
+    name: Mapped[str] = mapped_column(String(255))
+
+
+class EmissionSource(Base, TenantTimestampMixin):
+    __tablename__ = "emission_sources"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    process_line_id: Mapped[str] = mapped_column(ForeignKey("process_lines.id"))
+    emission_type: Mapped[str] = mapped_column(String(255))
+    threshold_exceeded: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class SiteClearance(Base, TenantTimestampMixin):
+    __tablename__ = "site_clearances"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    site_id: Mapped[str] = mapped_column(ForeignKey("factory_sites.id"))
+    clearance_type: Mapped[str] = mapped_column(String(100))
+    issuing_authority: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    reference_number: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    valid_until: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="active")
+
+
+class MSMEEvidenceInbox(Base, TenantTimestampMixin):
+    __tablename__ = "msme_evidence_inbox"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    site_id: Mapped[str] = mapped_column(ForeignKey("factory_sites.id"))
+    period: Mapped[str] = mapped_column(String(20))
+    category: Mapped[str] = mapped_column(String(100))
+    item_name: Mapped[str] = mapped_column(String(255))
+    due_date: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="pending")
+    evidence_id: Mapped[str | None] = mapped_column(ForeignKey("evidence.id"), nullable=True)
+
+
+class AgentUsageLog(Base, TenantTimestampMixin):
+    __tablename__ = "agent_usage_logs"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
+    user_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    model: Mapped[str] = mapped_column(String(100))
+    input_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cost_usd: Mapped[float] = mapped_column(Numeric(10, 6), default=0)
+    turns: Mapped[int] = mapped_column(Integer, default=1)
+    logged_at: Mapped[DateTime] = mapped_column(DateTime)
+
+
+class EvidenceSource(Base, TenantTimestampMixin):
+    __tablename__ = "evidence_sources"
+    
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True, default="demo-org")
+    name: Mapped[str] = mapped_column(String(255))
+    source_type: Mapped[str] = mapped_column(String(100))
+    config: Mapped[dict] = mapped_column(JSON, default=dict)
+    credentials: Mapped[dict] = mapped_column(JSON, default=dict)
+    schedule: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_run: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    last_success: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    error_count: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class EvidenceCollectionJob(Base, TenantTimestampMixin):
+    __tablename__ = "evidence_collection_jobs"
+    
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    source_id: Mapped[str] = mapped_column(ForeignKey("evidence_sources.id"))
+    status: Mapped[str] = mapped_column(String(50), default="pending")
+    started_at: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    completed_at: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    items_found: Mapped[int] = mapped_column(Integer, default=0)
+    items_stored: Mapped[int] = mapped_column(Integer, default=0)
+    errors: Mapped[dict] = mapped_column(JSON, default=list)
+    log_output: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class CollectedEvidence(Base, TenantTimestampMixin):
+    __tablename__ = "collected_evidence"
+    
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True, default="demo-org")
+    job_id: Mapped[str | None] = mapped_column(ForeignKey("evidence_collection_jobs.id"), nullable=True)
+    source_type: Mapped[str] = mapped_column(String(100))
+    source_identifier: Mapped[str] = mapped_column(String(255))
+    evidence_type: Mapped[str] = mapped_column(String(100))
+    content_hash: Mapped[str] = mapped_column(String(128))
+    raw_content: Mapped[str | None] = mapped_column(Text, nullable=True)
+    parsed_content: Mapped[dict] = mapped_column(JSON, default=dict)
+    metadata_: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
+    collected_at: Mapped[DateTime] = mapped_column(DateTime)
+    ai_system_id: Mapped[str | None] = mapped_column(ForeignKey("ai_systems.id"), nullable=True)
+    control_id: Mapped[str | None] = mapped_column(ForeignKey("controls.id"), nullable=True)
+
+
+class NotificationPreference(Base, TenantTimestampMixin):
+    __tablename__ = "notification_preferences"
+    
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    channel_preferences: Mapped[dict] = mapped_column(JSON, default=dict)
+    frequency: Mapped[str] = mapped_column(String(50), default="immediate")
+    quiet_hours_start: Mapped[str | None] = mapped_column(String(20), nullable=True) # e.g. "22:00"
+    quiet_hours_end: Mapped[str | None] = mapped_column(String(20), nullable=True)   # e.g. "06:00"
+    language: Mapped[str] = mapped_column(String(20), default="english")
+    categories: Mapped[dict] = mapped_column(JSON, default=list)
+
+
+class ScheduledJob(Base, TenantTimestampMixin):
+    __tablename__ = "scheduled_jobs"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True, default="demo-org")
+    name: Mapped[str] = mapped_column(String(255))
+    job_type: Mapped[str] = mapped_column(String(100))
+    schedule: Mapped[str] = mapped_column(String(100))  # Cron
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_run: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    next_run: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+
+
+class NotificationLog(Base, TenantTimestampMixin):
+    __tablename__ = "notification_logs"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True, default="demo-org")
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    notification_type: Mapped[str] = mapped_column(String(100))
+    channels: Mapped[dict] = mapped_column(JSON, default=list)
+    subject: Mapped[str] = mapped_column(String(255))
+    content: Mapped[str] = mapped_column(Text)
+    sent_at: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    delivered_at: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    read_at: Mapped[DateTime | None] = mapped_column(DateTime, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="pending")
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class LicenceTemplate(Base, TenantTimestampMixin):
+    __tablename__ = "licence_templates"
+    
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    licence_type: Mapped[str] = mapped_column(String(100))
+    regulatory_body: Mapped[str] = mapped_column(String(255))
+    renewal_cycle: Mapped[str] = mapped_column(String(50))
+    renewal_cycle_months: Mapped[int] = mapped_column(Integer, default=12)
+    mandatory: Mapped[bool] = mapped_column(Boolean, default=True)
+    reminder_days: Mapped[dict] = mapped_column(JSON, default=list) # e.g. [30, 15, 7, 1]
+    applicable_org_types: Mapped[dict] = mapped_column(JSON, default=list) # e.g. ["hospital", "manufacturing"]
+    applicable_states: Mapped[dict] = mapped_column(JSON, default=list)
+    min_size_requirement: Mapped[dict] = mapped_column(JSON, default=dict) # e.g. {"bed_count_min": 100}
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    documents_required: Mapped[dict] = mapped_column(JSON, default=list)
+
+
+class OrganizationLicence(Base, TenantTimestampMixin):
+    __tablename__ = "organization_licences"
+    
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    organization_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
+    template_id: Mapped[str | None] = mapped_column(ForeignKey("licence_templates.id"), nullable=True)
+    licence_number: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    issue_date: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    expiry_date: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="pending_upload")
+    document_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class OnboardingSession(Base, TenantTimestampMixin):
+    __tablename__ = "onboarding_sessions"
+    
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
     organization_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
     current_step: Mapped[int] = mapped_column(Integer, default=1)
     status: Mapped[str] = mapped_column(String(50), default="in_progress")
@@ -453,6 +648,133 @@ class ReportTemplate(Base, TenantTimestampMixin):
     
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str] = mapped_column(String(255))
+    jurisdiction: Mapped[str] = mapped_column(String(100))
+    industry_scope: Mapped[dict] = mapped_column(JSON, default=list)
+    risk_classification_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    mandatory_for_ai: Mapped[bool] = mapped_column(Boolean, default=False)
+    renewal_period_months: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    estimated_cost_usd_range: Mapped[dict] = mapped_column(JSON, default=dict)
+    documentation_checklist: Mapped[dict] = mapped_column(JSON, default=list)
+
+
+class ExportCertification(Base, TenantTimestampMixin):
+    __tablename__ = "export_certifications"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    certification_code: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(255))
+    issuing_authority: Mapped[str] = mapped_column(String(100))
+    jurisdiction: Mapped[str] = mapped_column(String(100))
+    industry_scope: Mapped[dict] = mapped_column(JSON, default=list)
+    risk_classification_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    mandatory_for_ai: Mapped[bool] = mapped_column(Boolean, default=False)
+    renewal_period_months: Mapped[int] = mapped_column(Integer, nullable=True)
+    estimated_cost_usd_range: Mapped[dict] = mapped_column(JSON, default=dict)
+    documentation_checklist: Mapped[dict] = mapped_column(JSON, default=list)
+
+
+class SystemDiscovery(Base, TenantTimestampMixin):
+    __tablename__ = "system_discovery"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(String(64), ForeignKey("organizations.id"))
+    discovered_name: Mapped[str] = mapped_column(String(255))
+    discovery_type: Mapped[str] = mapped_column(String(50)) 
+    meta_info: Mapped[dict] = mapped_column(JSON, default=dict)
+    status: Mapped[str] = mapped_column(String(50), default="unassigned")
+
+
+class OrganizationExportProfile(Base, TenantTimestampMixin):
+    __tablename__ = "organization_export_profiles"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
+    target_markets: Mapped[dict] = mapped_column(JSON, default=list)
+    product_categories: Mapped[dict] = mapped_column(JSON, default=list)
+    active_certifications: Mapped[dict] = mapped_column(JSON, default=list)
+    compliance_gaps: Mapped[dict] = mapped_column(JSON, default=list)
+    next_renewal_date: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    global_bridge_status: Mapped[str] = mapped_column(String(50), default="not_started")
+
+
+class JurisdictionRequirement(Base, TenantTimestampMixin):
+    __tablename__ = "jurisdiction_requirements"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    country_code: Mapped[str] = mapped_column(String(2), index=True)
+    regulation_name: Mapped[str] = mapped_column(String(255))
+    ai_system_scope: Mapped[str | None] = mapped_column(Text, nullable=True)
+    mandatory_registration: Mapped[bool] = mapped_column(Boolean, default=False)
+    data_localization_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    third_party_audit_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    timeline_to_comply_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    penalty_for_non_compliance: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class ExportRecord(Base, TenantTimestampMixin):
+    __tablename__ = "export_records"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True, default="demo-org")
+    invoice_no: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    destination_country: Mapped[str] = mapped_column(String(100))
+    shipment_value: Mapped[float] = mapped_column(Numeric(15, 2))
+    status: Mapped[str] = mapped_column(String(50), default="draft")
+    compliance_score: Mapped[float] = mapped_column(Numeric(3, 2), default=0.0)
+    gst_status: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
+
+class RequirementChecklist(Base, TenantTimestampMixin):
+    __tablename__ = "requirement_checklists"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    export_record_id: Mapped[str] = mapped_column(ForeignKey("export_records.id"))
+    document_type: Mapped[str] = mapped_column(String(100))
+    is_completed: Mapped[bool] = mapped_column(Boolean, default=False)
+    file_id: Mapped[str | None] = mapped_column(ForeignKey("evidence.id"), nullable=True)
+
+
+class WorkflowTemplate(Base, TenantTimestampMixin):
+    __tablename__ = "workflow_templates"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    template_code: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(255))
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    html_content: Mapped[str] = mapped_column(Text)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    industry: Mapped[str] = mapped_column(String(100))
+    framework: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    trigger_type: Mapped[str] = mapped_column(String(50)) # Scheduled, Event, Manual
+    trigger_config: Mapped[dict] = mapped_column(JSON, default=dict)
+    steps: Mapped[dict] = mapped_column(JSON, default=list)
+    approval_required: Mapped[bool] = mapped_column(Boolean, default=True)
+    auto_execute: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class DocumentTemplate(Base, TenantTimestampMixin):
+    __tablename__ = "document_templates"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    template_code: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    frameworks: Mapped[dict] = mapped_column(JSON, default=list)
+    industries: Mapped[dict] = mapped_column(JSON, default=list)
+    document_type: Mapped[str] = mapped_column(String(50)) # Policy, Procedure, Report
+    template_content: Mapped[str] = mapped_column(Text)
+    required_inputs: Mapped[dict] = mapped_column(JSON, default=list)
+    ai_generation_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+
+
+class GeneratedDocument(Base, TenantTimestampMixin):
+    __tablename__ = "generated_documents"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    org_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
+    template_id: Mapped[str] = mapped_column(ForeignKey("document_templates.id"))
+    status: Mapped[str] = mapped_column(String(50), default="draft")
+    input_data: Mapped[dict] = mapped_column(JSON, default=dict)
+    raw_content: Mapped[str | None] = mapped_column(Text, nullable=True)
+    generated_at: Mapped[DateTime] = mapped_column(DateTime)
+    file_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    approval_chain: Mapped[dict] = mapped_column(JSON, default=list)

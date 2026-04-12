@@ -1,143 +1,240 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Nav } from "../../components/Nav";
+import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import 'leaflet/dist/leaflet.css';
+import { 
+  Globe, 
+  ArrowRight, 
+  Plus, 
+  AlertCircle, 
+  CheckCircle2, 
+  Clock, 
+  ChevronRight,
+  TrendingUp,
+  Map as MapIcon,
+  ShieldCheck,
+  FileText
+} from 'lucide-react';
 
-export default function ExportDashboardPage() {
-  const [loading, setLoading] = useState(true);
+// Leaflet is problematic with SSR
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
+
+const MARKET_DATA = [
+  { id: 'US', name: 'USA', status: 'In Progress', readiness: 45, lat: 37.0902, lng: -95.7129, color: '#f59e0b' },
+  { id: 'UK', name: 'United Kingdom', status: 'Ready', readiness: 92, lat: 55.3781, lng: -3.4360, color: '#10b981' },
+  { id: 'EU', name: 'European Union', status: 'Not Started', readiness: 15, lat: 50.8503, lng: 4.3517, color: '#ef4444' },
+];
+
+const BRIDGE_STEPS = [
+  { 
+    id: 1, 
+    title: 'India CDSCO Transfer', 
+    desc: 'Mapping current Clinical Data to EU MDR Annex XIV', 
+    time: '3-4 Weeks', 
+    cost: '$0 (Internal)', 
+    status: 'completed' 
+  },
+  { 
+    id: 2, 
+    title: 'ISO 13485:2016 Audit', 
+    desc: 'Gap analysis for Medical Device QMS', 
+    time: '2 Months', 
+    cost: '$5,500', 
+    status: 'in-progress' 
+  },
+  { 
+    id: 3, 
+    title: 'CE Marking Technical File', 
+    desc: 'Preparation of technical dossier for EU Notified Body', 
+    time: '4-6 Months', 
+    cost: '$12,000', 
+    status: 'pending' 
+  },
+];
+
+export default function ExportIntelligence() {
+  const [selectedMarket, setSelectedMarket] = useState(MARKET_DATA[0]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
+    setIsClient(true);
   }, []);
 
-  const [shipments] = useState([
-    { id: "EXP-SH-001", invoice: "INV/23/0441", dest: "United Kingdom", value: "$45,200", status: "Pre-shipment", score: 0.85, status_color: "primary" },
-    { id: "EXP-SH-002", invoice: "INV/23/0445", dest: "USA", value: "$128,000", status: "Shipped", score: 0.98, status_color: "success" },
-    { id: "EXP-SH-003", invoice: "INV/24/0012", dest: "Germany", value: "$12,500", status: "Payment Realized", score: 1.0, status_color: "slate" },
-  ]);
-
-  const [calendar] = useState([
-    { item: "FSSAI License Renewal", due: "May 12, 2026", status: "Upcoming", color: "primary" },
-    { item: "Spice Board RCMC", due: "April 08, 2026", status: "Critical", color: "critical" },
-    { item: "GST LUT Filing (FY 26-27)", due: "March 31, 2026", status: "Due Now", color: "warning" },
-  ]);
-
   return (
-    <div className="space-y-10 animate-in fade-in duration-500">
-      <header className="flex justify-between items-end border-b border-slate-200 pb-8">
+    <div className="p-8 space-y-8 bg-slate-50 min-h-screen">
+      {/* Header */}
+      <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-display font-bold text-slate-900">Export Intelligence</h1>
-          <p className="text-slate-500 font-medium tracking-tight">Global logistics compliance & jurisdictional rules mapping.</p>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Global Bridge Intelligence</h1>
+          <p className="text-slate-500 mt-1">Export Compliance Automation & Market Readiness Analysis</p>
         </div>
-        <div className="text-right">
-           <span className="block text-3xl font-display font-black text-primary">94.2%</span>
-           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Aggregate Compliance</span>
+        <div className="flex gap-3">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+            <Plus size={18} />
+            New Market Analysis
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 rounded-lg text-sm font-medium text-white hover:bg-indigo-700 transition-shadow shadow-sm">
+            <Globe size={18} />
+            Launch Export Pipeline
+          </button>
         </div>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="lg:col-span-2 space-y-6">
-          <div className="flex justify-between items-center">
-             <h2 className="text-lg font-display font-bold text-slate-900">Active Shipment Pipeline</h2>
-             <button className="bg-primary text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                New Shipment
-             </button>
-          </div>
-          
-          <div className="card !p-0 overflow-hidden">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                  <th className="px-6 py-4">Reference</th>
-                  <th className="px-6 py-4">Invoice</th>
-                  <th className="px-6 py-4">Destination</th>
-                  <th className="px-6 py-4">Intel Score</th>
-                  <th className="px-6 py-4 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {shipments.map(s => (
-                  <tr key={s.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer group">
-                    <td className="px-6 py-5 font-bold text-slate-900">{s.id}</td>
-                    <td className="px-6 py-5 font-medium text-slate-500 text-xs">{s.invoice}</td>
-                    <td className="px-6 py-5 font-bold text-slate-700">{s.dest}</td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary transition-all duration-1000" 
-                            style={{ width: loading ? '0%' : `${s.score * 100}%` }} 
-                          />
-                        </div>
-                        <span className="font-bold text-xs text-slate-900">{(s.score * 100).toFixed(0)}%</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <span className={`pill ${
-                        s.status_color === 'primary' ? 'bg-primary/10 text-primary' : 
-                        s.status_color === 'success' ? 'bg-success/10 text-success' : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {s.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <aside className="space-y-6">
-           <h2 className="text-lg font-display font-bold text-slate-900">Compliance Calendar</h2>
-           <div className="space-y-4">
-             {calendar.map((c, i) => (
-               <div key={i} className="card group hover:border-primary/50 cursor-pointer relative overflow-hidden">
-                  <div className="flex justify-between items-start mb-4">
-                     <h4 className="font-display font-bold text-slate-900 leading-tight group-hover:text-primary transition-colors">{c.item}</h4>
-                     <div className={`w-2 h-2 rounded-full ${c.color === 'critical' ? 'bg-critical animate-pulse' : c.color === 'warning' ? 'bg-warning' : 'bg-primary'}`} />
-                  </div>
-                  <div className="flex justify-between items-end">
-                    <div>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Due Date</p>
-                       <p className="text-sm font-bold text-slate-700">{c.due}</p>
-                    </div>
-                    <span className={`text-[10px] font-black uppercase tracking-tighter ${
-                      c.color === 'critical' ? 'text-critical' : 'text-slate-300'
-                    }`}>
-                      {c.status}
-                    </span>
-                  </div>
-               </div>
-             ))}
-           </div>
-           <button className="w-full py-4 bg-sidebar text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-xl shadow-sidebar/20">
-              Export Filing Console
-           </button>
-        </aside>
       </div>
 
-      <section>
-         <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-4">
-            <span className="block h-px w-8 bg-slate-200"></span>
-            VERTICAL INTELLIGENCE NODES
-         </h3>
-         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { title: "GST LUT Monitoring", icon: "⌗" },
-              { title: "FSSAI Export Vault", icon: "♨" },
-              { title: "Shiprocket API Hook", icon: "⎋" },
-              { title: "Realization Tracker", icon: "⌬" }
-            ].map(node => (
-              <button key={node.title} className="card flex flex-col items-center text-center p-8 hover:border-primary transition-all group">
-                 <div className="text-3xl mb-4 text-slate-400 group-hover:text-primary group-hover:scale-110 transition-all">{node.icon}</div>
-                 <h5 className="font-bold text-slate-800 text-sm">{node.title}</h5>
-                 <p className="text-[10px] font-bold text-success mt-2 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Active & Syncing</p>
+      {/* Hero Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Map Section */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm h-[600px] flex flex-col">
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-white">
+            <div className="flex items-center gap-2">
+              <MapIcon className="text-indigo-600" size={20} />
+              <span className="font-semibold text-slate-800">Operational Market Map</span>
+            </div>
+            <div className="flex gap-4 text-xs font-medium">
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div> Ready</div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div> In Progress</div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-rose-500"></div> Gap Detected</div>
+            </div>
+          </div>
+          
+          <div className="flex-1 relative bg-slate-100">
+            {isClient ? (
+              <MapContainer 
+                center={[30, 0] as any} 
+                zoom={2} 
+                style={{ height: '100%', width: '100%' }}
+                scrollWheelZoom={false}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {MARKET_DATA.map(market => (
+                  <Marker 
+                    key={market.id} 
+                    position={[market.lat, market.lng] as any}
+                    eventHandlers={{
+                      click: () => setSelectedMarket(market),
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-1">
+                        <p className="font-bold text-slate-900 m-0">{market.name}</p>
+                        <p className="text-xs text-slate-500 m-0">Readiness: {market.readiness}%</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-slate-400">Loading Global Map...</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Market Profile Panel */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+          <div className="p-6 border-b border-slate-100">
+            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="text-indigo-600" size={20} />
+              Market Intelligence: {selectedMarket.name}
+            </h3>
+          </div>
+
+          <div className="p-6 space-y-8 flex-1 overflow-y-auto">
+            {/* Readiness Score */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-slate-500">Compliance Readiness</span>
+                <span className={`text-sm font-bold ${selectedMarket.readiness > 80 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {selectedMarket.readiness}%
+                </span>
+              </div>
+              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-1000 ${selectedMarket.readiness > 80 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                  style={{ width: `${selectedMarket.readiness}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Bridge Path */}
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bridge Roadmap</h4>
+              <div className="space-y-4">
+                {BRIDGE_STEPS.map((step, idx) => (
+                  <div key={step.id} className="relative pl-8">
+                    {idx !== BRIDGE_STEPS.length - 1 && (
+                      <div className="absolute left-3 top-7 bottom-0 w-px bg-slate-100" />
+                    )}
+                    <div className={`absolute left-0 top-1 w-6 h-6 rounded-full flex items-center justify-center text-[10px] border-2 bg-white ${
+                      step.status === 'completed' ? 'border-emerald-500 text-emerald-500' : 
+                      step.status === 'in-progress' ? 'border-amber-500 text-amber-500 animate-pulse' : 
+                      'border-slate-200 text-slate-400'
+                    }`}>
+                      {step.status === 'completed' ? <CheckCircle2 size={12} /> : idx + 1}
+                    </div>
+                    <div className="space-y-1">
+                      <p className={`text-sm font-semibold ${step.status === 'pending' ? 'text-slate-500' : 'text-slate-900'}`}>
+                        {step.title}
+                      </p>
+                      <p className="text-xs text-slate-400 leading-relaxed">{step.desc}</p>
+                      <div className="flex gap-4 pt-1">
+                        <span className="text-[10px] font-medium text-slate-500 flex items-center gap-1">
+                          <Clock size={10} /> {step.time}
+                        </span>
+                        <span className="text-[10px] font-medium text-slate-500 flex items-center gap-1">
+                          <TrendingUp size={10} /> {step.cost}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-4 flex flex-col gap-3">
+              <button className="w-full flex items-center justify-between p-3 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors group">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center">
+                    <FileText size={18} />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-bold">Generate Gap Report</p>
+                    <p className="text-[10px] opacity-70">PDF Audit for {selectedMarket.name}</p>
+                  </div>
+                </div>
+                <ArrowRight size={16} className="-translate-x-1 group-hover:translate-x-0 transition-transform" />
               </button>
-            ))}
-         </div>
-      </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Compliance Intelligence Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          { icon: <AlertCircle className="text-rose-500" />, title: 'Market Gaps', value: '4', desc: 'Critical requirements missing for EU market.' },
+          { icon: <Clock className="text-indigo-500" />, title: 'Expiring Soon', value: '2', desc: 'GST LUT & Spice Board renewals due in 12 days.' },
+          { icon: <TrendingUp className="text-emerald-500" />, title: 'Export Readiness', value: 'Medium', desc: 'Ready for UK & USA low-risk product tiers.' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-2 bg-slate-50 rounded-lg">{stat.icon}</div>
+              <ChevronRight className="text-slate-300" size={16} />
+            </div>
+            <p className="text-sm font-medium text-slate-500">{stat.title}</p>
+            <p className="text-2xl font-bold text-slate-900 my-1">{stat.value}</p>
+            <p className="text-xs text-slate-400">{stat.desc}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

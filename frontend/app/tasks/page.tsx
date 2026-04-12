@@ -77,9 +77,27 @@ export default function TasksPage() {
   const [tab, setTab] = useState('My Tasks');
   const [tasks, setTasks] = useState(INIT);
   const [wfDetail, setWfDetail] = useState<typeof WORKFLOWS[0] | null>(null);
+  const [showNewModal, setShowNewModal] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
 
   function moveTask(id: string, col: KanbanCol) {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, col } : t));
+  }
+
+  function handleCreateTask() {
+    if (!newTaskTitle.trim()) return;
+    const newTask: Task = {
+      id: `T-00${tasks.length + 1}`,
+      title: newTaskTitle,
+      priority: 'Medium',
+      system: 'General',
+      due: 'Pending',
+      col: 'Open',
+      assignee: 'Darpan Antala'
+    };
+    setTasks([newTask, ...tasks]);
+    setNewTaskTitle('');
+    setShowNewModal(false);
   }
 
   const myTasks = tasks.filter(t => t.assignee === 'Darpan Antala');
@@ -91,8 +109,28 @@ export default function TasksPage() {
           <nav className="text-[11.5px] text-slate-400 flex items-center gap-1.5 mb-2"><span>Home</span><ChevR /><span className="text-slate-800 font-bold">Actions & Workflows</span></nav>
           <h1 className="text-2xl font-black text-slate-800">Actions & Workflows</h1>
         </div>
-        <button className="bg-indigo-600 text-white font-black px-4 py-2.5 rounded-xl text-[13px] flex items-center gap-2 shadow-lg hover:bg-indigo-700 transition-all"><Plus /> New Task</button>
+        <button onClick={() => setShowNewModal(true)} className="bg-indigo-600 text-white font-black px-4 py-2.5 rounded-xl text-[13px] flex items-center gap-2 shadow-lg hover:bg-indigo-700 transition-all"><Plus /> New Task</button>
       </div>
+
+      {showNewModal && (
+        <div className="fixed inset-0 bg-slate-900/40 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h3 className="text-[16px] font-black text-slate-800 mb-4">Create New Task</h3>
+            <input 
+              autoFocus
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-[13px] outline-none focus:border-indigo-400 mb-4"
+              placeholder="Task title (e.g. Renew Textile License)"
+              value={newTaskTitle}
+              onChange={e => setNewTaskTitle(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleCreateTask()}
+            />
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setShowNewModal(false)} className="px-4 py-2 text-[13px] font-bold text-slate-500 hover:text-slate-800">Cancel</button>
+              <button onClick={handleCreateTask} className="px-6 py-2 bg-indigo-600 text-white font-black rounded-xl text-[13px] hover:bg-indigo-700">Create Task</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex-1 overflow-hidden flex flex-col">
         <div className="border-b border-slate-200 px-6 pt-4 flex">

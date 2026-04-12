@@ -171,4 +171,18 @@ tests:
             "summary": "Compliance check triggered through policy engine",
         }
 
+    if name == "generate_document":
+        from app.services.document_service import DocumentAIService
+        service = DocumentAIService(db)
+        doc = await service.generate_document(
+            org_id=org_id,
+            template_code=params["template_code"],
+            user_inputs=params["inputs"]
+        )
+        return {
+            "document_id": doc.id,
+            "file_url": doc.file_url,
+            "summary": f"Artifact {params['template_code']} generated successfully. View it in the Vault."
+        }
+
     return {"error": f"Unknown tool: {name}"}

@@ -81,4 +81,16 @@ COMPLIANCE_AGENT_TOOLS = [
             "required": ["query"],
         },
     },
+    {
+        "name": "generate_document",
+        "description": "Trigger the high-fidelity PDF generation engine for a specific compliance artifact",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "template_code": {"type": "string", "description": "e.g. DPDPA_NOTICE, NABH_PROTOCOL"},
+                "inputs": {"type": "object", "description": "Key-value pairs for template variables"}
+            },
+            "required": ["template_code", "inputs"],
+        },
+    },
 ]
