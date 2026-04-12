@@ -1,0 +1,12 @@
+control:
+  id: EUAI-HR-001
+  title: High Risk AI must have monitoring
+  framework: EU_AI_ACT
+
+tests:
+  - type: metadata_check
+    field: monitoring_enabled
+    operator: equals
+    value: true
+  - type: evidence_exists
+    evidence_type: validation_study
