@@ -17,6 +17,7 @@ from app.schemas.common import (
 from app.services.audit import write_audit_log
 from app.agent.compliance_agent import run_compliance_agent
 from app.agent.standalone_agent import run_standalone_agent
+from app.compliance_catalog import INDUSTRY_DROPDOWN, build_dynamic_checklist
 
 router = APIRouter(prefix="/api")
 
@@ -181,3 +182,22 @@ async def standalone_chat(payload: dict) -> dict:
         uploaded_docs=payload.get("uploaded_docs"),
     )
     return result
+
+
+@router.get("/compliance/industry-categories")
+def list_industry_categories(
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager", "contributor", "viewer", "auditor")),
+) -> dict:
+    """Return supported industry/sub-industry hierarchy for onboarding dropdowns."""
+    return {"categories": INDUSTRY_DROPDOWN}
+
+
+@router.post("/compliance/checklist/preview")
+def preview_dynamic_checklist(
+    payload: dict,
+    claims: dict = Depends(require_roles("owner", "admin", "risk_manager", "contributor", "viewer", "auditor")),
+) -> dict:
+    """Generate dynamic checklist by industry and selected export markets."""
+    industry = payload.get("industry", "")
+    markets = payload.get("export_markets", [])
+    return build_dynamic_checklist(industry=industry, export_markets=markets)

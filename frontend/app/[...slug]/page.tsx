@@ -35,6 +35,13 @@ const industries = [
   { label: "🏢 MSME General", children: ["All MSME Categories"] }
 ];
 
+
+const licenseCatalogHighlights = {
+  "Chemical Industry": ["Factory License", "Hazardous Waste Authorization", "Explosives License", "REACH Registration", "TSCA Inventory"],
+  "Food & Agriculture": ["FSSAI License", "APEDA Registration", "Agmark", "EU Food Import Requirements", "FDA Food Facility Registration"],
+  "Manufacturing & Engineering": ["Factory License", "Pollution CTE/CTO", "CE Marking", "FCC/UL Listing"],
+};
+
 const licenseRows = [
   ["GST Registration", "✅ Valid", "Perpetual", "View"],
   ["MSME/Udyam Registration", "✅ Valid", "Perpetual", "View"],
@@ -54,6 +61,23 @@ export default function DynamicSectionPage({ params }: { params: { slug: string[
     <main className="space-y-4">
       <h1 className="page-title">{meta.title}</h1>
       <p className="muted">{meta.description}</p>
+
+      
+
+      <section className="card">
+        <h2 className="card-title">Dynamic Compliance Checklist Engine Coverage</h2>
+        <p className="muted">Universal + industry-specific + export conditional certifications are supported.</p>
+        <div className="grid md:grid-cols-3 gap-3 mt-3">
+          {Object.entries(licenseCatalogHighlights).map(([industry, items]) => (
+            <div key={industry} className="card" style={{ padding: 16 }}>
+              <p className="font-semibold">{industry}</p>
+              <ul className="action-list">
+                {items.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {slug === "settings/organization" && (
         <section className="card">

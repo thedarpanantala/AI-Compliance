@@ -88,3 +88,9 @@ See `docs/architecture/durable_adoption_governance_engine.md` for adoption, ince
 
 ## Supabase Deployment
 This repo is now Supabase-ready for managed Postgres + browser client wiring. See `docs/deployment/supabase.md` for the exact files and env vars to update.
+
+## Dynamic Compliance Checklist Engine
+- Universal mandatory requirements (GST, MSME/Udyam, PAN/TAN, IEC, Trade License, Shops & Establishments).
+- Industry-specific mandatory requirements and voluntary certifications.
+- Conditional export certifications triggered by selected markets (EU/US/UK).
+- Seed coverage included for Chemical Industry, Food & Agriculture, and Manufacturing & Engineering, with structure ready for expanding remaining categories.
