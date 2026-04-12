@@ -1,34 +1,50 @@
 const pageMeta: Record<string, { title: string; description: string }> = {
-  "overview/my-compliance": { title: "My Compliance", description: "Your personalized compliance obligations, health score, and priority queue." },
-  "ai-governance/ai-assessment": { title: "AI Assessment", description: "Run structured AI risk and framework assessments with scheduling." },
-  "ai-governance/ai-architecture": { title: "AI Architecture", description: "Document model architecture, data pipelines, and deployment controls." },
-  "privacy/ropa": { title: "ROPA", description: "Record of Processing Activities for DPDPA/GDPR aligned operations." },
-  "privacy/data-subjects": { title: "Data Subjects", description: "Track requests, SLA status, and fulfillment evidence." },
-  "privacy/dpia": { title: "DPIA", description: "Data Protection Impact Assessments with AI-assisted drafting." },
-  "privacy/privacy-by-design": { title: "Privacy by Design", description: "Embed privacy controls at design-time with policy templates." },
-  "incidents/incidents": { title: "Incidents", description: "Log incidents with severity, owners, timelines, and remediation." },
-  "incidents/breaches": { title: "Breaches", description: "Assess and manage breach notifications across jurisdictions." },
-  "incidents/reports": { title: "Reports", description: "Regulatory reporting package builder for incidents and breaches." },
-  "compliance/gap-analysis": { title: "Gap Analysis", description: "Identify control deficiencies and assign remediation tasks." },
-  "documents/document-vault": { title: "Document Vault", description: "Versioned repository of compliance evidence and generated documents." },
-  "export-trade/export-intelligence": { title: "Export Intelligence", description: "Country-specific export compliance requirements and alerts." },
-  "export-trade/global-bridge": { title: "Global Bridge", description: "Cross-market obligations mapping for EU/US/UK expansion." },
-  "export-trade/shipments": { title: "Shipments", description: "Shipment-level compliance checks and export document readiness." },
-  "reporting/compliance-dashboards": { title: "Dashboards", description: "Executive and operational compliance dashboards." },
-  "reporting/generate-report": { title: "Generate Report", description: "AI-assisted report generation with human approval checkpoints." },
-  "reporting/audit-trails": { title: "Audit Trail", description: "Tamper-evident activity trail for audits and investigations." },
-  "settings/organization": { title: "Organization", description: "Org profile, industry mapping, and regional operations setup." },
-  "settings/users-roles": { title: "Users & Roles", description: "Role-based access model (Admin, DPO, Auditor, Executive)." },
-  "settings/integrations": { title: "Integrations", description: "Connect GitHub, MLflow, Databricks, and enterprise systems." },
-  "settings/notifications": { title: "Notifications", description: "Configure alerts for deadlines, incidents, and regulatory updates." },
-  "settings/help-support": { title: "Help & Support", description: "Knowledge base, guides, and support channels." }
+  "overview/my-compliance": { title: "My Compliance", description: "Track licenses, certifications, and document obligations from a single cockpit." },
+  "ai-governance/ai-assessment": { title: "AI Assessment", description: "Risk-tier classification and compliance checks for all AI systems." },
+  "ai-governance/ai-architecture": { title: "AI Architecture", description: "Model architecture, deployment flow, and control mapping." },
+  "privacy/ropa": { title: "ROPA", description: "Record of Processing Activities aligned with DPDPA/GDPR." },
+  "privacy/data-subjects": { title: "Data Subjects", description: "Manage DSRs, SLA deadlines, and fulfillment records." },
+  "privacy/dpia": { title: "DPIA", description: "AI-assisted DPIA creation with mandatory human review." },
+  "privacy/privacy-by-design": { title: "Privacy by Design", description: "Shift-left privacy controls across AI lifecycle." },
+  "incidents/incidents": { title: "Incidents", description: "Incident registry with severity, owner, and remediation workflow." },
+  "incidents/breaches": { title: "Breaches", description: "Breach assessment and regulator-notification workflow." },
+  "incidents/reports": { title: "Reports", description: "Incident reporting packets for internal and external stakeholders." },
+  "compliance/gap-analysis": { title: "Gap Analysis", description: "Framework-wise control gap analysis and remediation queue." },
+  "documents/document-vault": { title: "Document Vault", description: "Versioned compliance documents with approvals and evidence linkage." },
+  "export-trade/export-intelligence": { title: "Export Intelligence", description: "EU/US/UK export requirements and market readiness guidance." },
+  "export-trade/global-bridge": { title: "Global Bridge", description: "Cross-framework and cross-jurisdiction mapping layer." },
+  "export-trade/shipments": { title: "Shipments", description: "Shipment-level compliance pre-checks and documentation readiness." },
+  "reporting/compliance-dashboards": { title: "Dashboards", description: "Role-based dashboard views for Executive and Compliance Officer." },
+  "reporting/generate-report": { title: "Generate Report", description: "Generate board-ready and audit-ready compliance reports." },
+  "reporting/audit-trails": { title: "Audit Trail", description: "Tamper-evident activity logs and evidentiary history." },
+  "settings/organization": { title: "Organization", description: "Industry category, sub-category, markets, and profile setup." },
+  "settings/users-roles": { title: "Users & Roles", description: "Role-based access (Admin, Compliance Officer, DPO, Executive, Auditor)." },
+  "settings/integrations": { title: "Integrations", description: "Connect ERP, DMS, e-signature, and government portals." },
+  "settings/notifications": { title: "Notifications", description: "Configure reminders, escalation rules, and delivery channels." },
+  "settings/help-support": { title: "Help & Support", description: "Guides, support tickets, and onboarding help center." }
 };
 
 const industries = [
-  "Healthcare & Medical", "Textile & Apparel", "Manufacturing & Engineering", "Chemical Industry", "Food & Agriculture", "Electronics & IT"
+  { label: "🏥 Healthcare & Medical", children: ["Hospitals & Clinics", "Diagnostic Laboratories", "Medical Device Manufacturing", "Pharmaceutical Manufacturing", "Medical Tourism Services"] },
+  { label: "🧵 Textile & Apparel", children: ["Textile Manufacturing", "Garment Manufacturing", "Protective Textiles", "Technical Textiles", "Readymade Garments Export"] },
+  { label: "🏭 Manufacturing & Engineering", children: ["General Manufacturing", "Machinery & Equipment", "Automotive Components", "Heavy Engineering", "Electrical Equipment", "Electronics Manufacturing", "Precision Engineering"] },
+  { label: "🧪 Chemical Industry", children: ["Basic Chemicals", "Specialty Chemicals", "Agrochemicals", "Pharmaceutical Intermediates", "Petrochemicals", "Paints & Coatings"] },
+  { label: "🍽️ Food & Agriculture", children: ["Food Processing & Manufacturing", "Agricultural Products Export", "Spices Processing", "Meat & Poultry Processing", "Dairy Processing", "Seafood Processing", "Organic Food Products"] },
+  { label: "⚡ Electronics & IT", children: ["Consumer Electronics", "Industrial Electronics", "IT Hardware Manufacturing", "Semiconductor Manufacturing"] },
+  { label: "🏗️ Environmental Services", children: ["Pollution Control Equipment", "Waste Management", "Water Treatment", "Environmental Consulting"] },
+  { label: "🏢 MSME General", children: ["All MSME Categories"] }
 ];
 
-const roles = ["Admin", "Compliance Officer", "DPO", "Executive", "Auditor"];
+const licenseRows = [
+  ["GST Registration", "✅ Valid", "Perpetual", "View"],
+  ["MSME/Udyam Registration", "✅ Valid", "Perpetual", "View"],
+  ["NABH Accreditation", "⚠️ Soon", "Jun 15, 2026", "Renew"],
+  ["Clinical Establishment", "✅ Valid", "Dec 31, 2026", "View"],
+  ["Fire NOC", "⚠️ Soon", "Apr 30, 2026", "Renew"],
+  ["Electrical Certificate", "❌ Expired", "Mar 15, 2026", "Renew"],
+  ["BMW Authorization", "✅ Valid", "Aug 20, 2027", "View"],
+  ["Pollution CTO", "✅ Valid", "Mar 14, 2029", "View"]
+];
 
 export default function DynamicSectionPage({ params }: { params: { slug: string[] } }) {
   const slug = params.slug.join("/");
@@ -39,19 +55,82 @@ export default function DynamicSectionPage({ params }: { params: { slug: string[
       <h1 className="page-title">{meta.title}</h1>
       <p className="muted">{meta.description}</p>
 
-      <section className="card">
-        <h2 className="card-title">Industry Coverage</h2>
-        <div className="grid md:grid-cols-2 gap-2 mt-3">
-          {industries.map((industry) => <span key={industry}>• {industry}</span>)}
-        </div>
-      </section>
+      {slug === "settings/organization" && (
+        <section className="card">
+          <h2 className="card-title">Industry Categories</h2>
+          <div className="grid md:grid-cols-2 gap-3 mt-3">
+            {industries.map((industry) => (
+              <div key={industry.label} className="card" style={{ padding: 16 }}>
+                <p className="font-semibold">{industry.label}</p>
+                <ul className="action-list">
+                  {industry.children.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
-      <section className="card">
-        <h2 className="card-title">Role Visibility</h2>
-        <div className="grid md:grid-cols-5 gap-2 mt-3">
-          {roles.map((role) => <span key={role} className="badge-info">{role}</span>)}
-        </div>
-      </section>
+      {slug === "overview/my-compliance" && (
+        <>
+          <section className="kpi-grid">
+            <div className="metric-card"><p>Total Licenses</p><p className="text-2xl font-bold">24</p></div>
+            <div className="metric-card"><p>Expiring Soon</p><p className="text-2xl font-bold warning">2</p></div>
+            <div className="metric-card"><p>Expired</p><p className="text-2xl font-bold danger">1</p></div>
+          </section>
+          <section className="card">
+            <h2 className="card-title">License Tracking Dashboard</h2>
+            <table className="status-table mt-3">
+              <thead><tr><th>License / Certificate</th><th>Status</th><th>Expires</th><th>Action</th></tr></thead>
+              <tbody>
+                {licenseRows.map((row) => (
+                  <tr key={row[0]}>
+                    <td>{row[0]}</td>
+                    <td><span className={row[1].includes("Expired") ? "badge-danger" : row[1].includes("Soon") ? "badge-warning" : "badge-success"}>{row[1]}</span></td>
+                    <td>{row[2]}</td>
+                    <td><button className="btn-ghost">{row[3]}</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </>
+      )}
+
+      {slug === "ai-governance/ai-assessment" && (
+        <section className="card">
+          <h2 className="card-title">AI Compliance Workflow</h2>
+          <ol className="action-list">
+            <li>Step 1: Organization Profile Setup</li>
+            <li>Step 2: AI Agent analyzes industry + market requirements</li>
+            <li>Step 3: Compliance status assessment (Compliant/Attention/Missing)</li>
+            <li>Step 4: Auto-generate missing documents</li>
+            <li>Step 5: Human review and approval checkpoint</li>
+          </ol>
+        </section>
+      )}
+
+      {slug === "reporting/compliance-dashboards" && (
+        <section className="two-col">
+          <div className="card">
+            <h2 className="card-title">Executive Dashboard</h2>
+            <ul className="action-list">
+              <li>Compliance Health: 87%</li>
+              <li>Open Issues: 12</li>
+              <li>Pending Actions: 8</li>
+              <li>Audit Status: On Track</li>
+            </ul>
+          </div>
+          <div className="card">
+            <h2 className="card-title">Compliance Officer Dashboard</h2>
+            <ul className="action-list">
+              <li>Open Tasks: Review DPIA, Approve ROPA</li>
+              <li>Expiring Soon: Fire NOC, ISO 9001</li>
+              <li>AI Activity: Documents 5, Checks 24, Alerts 3</li>
+            </ul>
+          </div>
+        </section>
+      )}
     </main>
   );
 }
