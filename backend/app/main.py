@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.v1.routes import router as api_router
@@ -12,9 +11,21 @@ from app.api.v1.artifact_routes import router as artifact_router
 from app.core.config import settings
 from app.core.middleware import RequestSizeLimitMiddleware, SecurityHeadersMiddleware
 
-limiter = Limiter(key_func=get_remote_address, default_limits=[f"{settings.api_rate_limit_per_minute}/minute"])
+def client_ip_key_func(request: Request) -> str:
+    """Resolve client IP with proxy-aware flexibility for Cloudflare/other CDNs."""
+    if settings.trust_proxy_headers:
+        forwarded = request.headers.get(settings.client_ip_header)
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+        xff = request.headers.get("x-forwarded-for")
+        if xff:
+            return xff.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
 
-app = FastAPI(title=settings.app_name, version="1.2.0")
+
+limiter = Limiter(key_func=client_ip_key_func, default_limits=[f"{settings.api_rate_limit_per_minute}/minute"])
+
+app = FastAPI(title=settings.app_name, version="1.2.1")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in settings.allowed_origins.split(",") if origin.strip()],
@@ -59,5 +70,7 @@ def security_posture(request: Request) -> JSONResponse:
         "security_headers_enabled": settings.security_headers_enabled,
         "trusted_hosts": [host.strip() for host in settings.allowed_hosts.split(",") if host.strip()],
         "max_request_size_bytes": settings.max_request_size_bytes,
+        "waf_provider": settings.waf_provider,
+        "client_ip_header": settings.client_ip_header,
     }
     return JSONResponse(payload)

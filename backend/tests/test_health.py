@@ -1,6 +1,7 @@
 """API smoke tests."""
 from fastapi.testclient import TestClient
 from app.main import app
+from app.core.config import settings
 
 
 def test_health_endpoint() -> None:
@@ -20,9 +21,10 @@ def test_security_headers_present() -> None:
 
 def test_request_size_limit() -> None:
     client = TestClient(app)
+    oversized_length = settings.max_request_size_bytes + 10
     response = client.post(
         "/api/agent/standalone",
-        data=("x" * (1_048_576 + 10)),
-        headers={"content-type": "text/plain", "content-length": str(1_048_576 + 10)},
+        content=("x" * oversized_length),
+        headers={"content-type": "text/plain", "content-length": str(oversized_length)},
     )
     assert response.status_code == 413
