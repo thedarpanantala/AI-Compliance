@@ -1,0 +1,12 @@
+control:
+  id: IND-DPDPA-001
+  title: Hospital Must Record Patient Consent (DPDPA/ABDM)
+  framework: INDIA_HEALTHCARE
+
+tests:
+  - type: metadata_check
+    field: consent_recorded
+    operator: equals
+    value: true
+  - type: evidence_exists
+    evidence_type: abdm_token_audit

@@ -108,3 +108,5 @@ body {
   .section-title, .nav-link, .brand-subtitle { display: none; }
   .two-col { grid-template-columns: 1fr; }
 }
+body { font-family: Inter, Arial, sans-serif; }
+.card { @apply bg-white rounded-xl shadow p-4 border border-slate-200; }

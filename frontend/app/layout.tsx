@@ -1,8 +1,7 @@
 import "./styles.css";
 import type { ReactNode } from "react";
-import { ComplianceAgent } from "../components/ComplianceAgent";
-import { Nav } from "../components/Nav";
-import { Breadcrumbs } from "../components/Breadcrumbs";
+import { AuthProvider } from "../context/AuthContext";
+import { AppShell } from "../components/AppShell";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -23,6 +22,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
         <ComplianceAgent orgId="demo-org" userId="demo-user" />
+      <body className="bg-slate-50 text-slate-800 font-sans antialiased text-[13px] leading-[1.5]">
+        <AuthProvider>
+          <AppShell>
+            {children}
+          </AppShell>
+        </AuthProvider>
       </body>
     </html>
   );

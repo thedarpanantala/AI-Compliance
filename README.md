@@ -1,84 +1,85 @@
-# AI Compliance & Audit Automation Platform
+# 🛡️ AntiGravity: AI Compliance Automation Engine
 
-Production-ready monorepo for a multi-tenant RegTech SaaS platform focused on AI governance, compliance, risk documentation, and audit automation.
+**The only compliance automation platform purpose-built for India's deeply-integrated AI governance stack.**
 
-## Product Scope
-- AI system registration, dataset/model metadata inventory
-- Compliance assessments + per-control assessment tracking
-- Policy-as-code controls mapped to EU AI Act, ISO/IEC 42001, NIST AI RMF, GDPR, HIPAA
-- Context-aware policy evaluation ({ai_system, evidence, connectors, data assets})
-- Automated evidence capture from SDLC/ML platforms
-- Audit-ready reporting (JSON/CSV/PDF-ready payload)
-- Vertical modules for healthcare and manufacturing
+AntiGravity bridges the gap between regulatory mandates and operational reality for Healthcare, Pharma, and Manufacturing MSMEs. By fusing the **DPDPA**, **ABDM**, **CDSCO**, **NABH**, and **CPCB** into a unified policy-as-code engine, we cut compliance overhead from months to minutes with zero human intervention.
 
-## Monorepo Layout
-- `backend/`: FastAPI + SQLAlchemy service APIs and policy engine
-- `frontend/`: Next.js dashboard and workflows UI
-- `policy_library/`: YAML control packs by framework
-- `connectors/`: Source adapters for evidence ingestion
-- `sdk/`: Python + TypeScript SDKs
-- `infra/`: Docker and Terraform deployment templates
-- `docs/`: architecture, API, deployment docs
+---
 
-## Quick Start
+## 🚀 Key Value Propositions
+
+### 1. 100% Automated Evidence Collection
+Tired of chasing engineers and facility managers for logs? 
+AntiGravity features a **Connector Framework** that actively integrates with the systems your team already uses. 
+- **GitHub**: Auto-scrapes PRs and commit validations to form AI traceability matrices.
+- **MLflow**: Securely aggregates drift checks and validation experiment results on-the-fly.
+- **Email/IMAP**: A background worker that pulls in digital authorizations and scans attached lab PDF receipts securely.
+- **File System**: Scrapes designated compliance storage directories to dynamically link evidence mapping files to their respective licenses.
+
+### 2. 24/7 Zero-Touch Scheduled Governance
+Our integrated **Celery + Redis Scheduler** operates quietly in the background, making sure you are never operating out of compliance:
+- **Nightly Expiration Checks**: 11:00 PM scans ensuring none of your active clinical or environmental licenses are lapsing.
+- **Monthly Complete Scans**: First-of-the-month top-to-bottom health checks triggering automated remediation workflows to risk managers.
+- **Multi-channel Pings**: Configurable push-alerts sending critical failure notices directly to stakeholders via Email and WhatsApp. 
+
+### 3. Audit-Ready Documents on Demand
+When the regulator knocks, AntiGravity answers. 
+The **Report Generation Engine** uses our state-of-the-art templating pipeline to transform raw, live platform metrics into fully compliant, stylized PDF artifacts. 
+Whether you need the *Monthly Executive Summary* for your board or a detailed *GPCB Emission Audit*, the platform instantly produces a digitally verifiable PDF summary.
+
+### 4. 15-Minute Dynamic Onboarding 
+Going from Zero to Fully-Configured has never been faster. Our **Guided Wizard** utilizes a smart logic router that instantly scaffolds a customized compliance profile for you. By simply stating your company's vertical (e.g., *Small Hospital in Gujarat*), AntiGravity pre-populates the exact licenses (NABH, Bio-Medical Waste, Fire NOC) and AI System requirements specific to your operational footprint.
+
+---
+
+## 🛠️ Technology Stack
+An uncompromising, resilient technical architecture tailored for enterprise loads:
+- **Frontend**: Next.js 14, React 18, Tailwind CSS, shadcn/ui.
+- **Backend API**: Python FastAPI scaling horizontally.
+- **Database Architecture**: PostgreSQL driven via SQLAlchemy schemas (Fully Multi-Tenant).
+- **Asynchronous Queues**: Celery & Redis.
+- **Document Rendering**: WeasyPrint / PDFKit HTML parsing.
+
+---
+
+## 🏃‍♂️ Running the Platform Locally 
+
+To spin up the entire multi-service architecture locally on your development machine:
+
+### 1. Database & Brokers
+Ensure PostgreSQL is active on port `5432`.
+Start the Redis broker via Docker:
 ```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.local.example frontend/.env.local
-
-docker compose up --build
+docker run -p 6379:6379 -d redis
 ```
 
-Services:
-- API: `http://localhost:8000/docs`
-- UI: `http://localhost:3000`
-
-One-command local start:
+### 2. Backend API
 ```bash
-./scripts/start_local.sh
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Need a shareable preview link for a friend? See `docs/deployment/share_preview.md`.
-
-## Development Commands
+### 3. Asynchronous Workers (Celery)
+In separate terminal instances:
 ```bash
-# Backend
-cd backend && pip install -r requirements.txt && pytest
+# Start the background task worker
+celery -A app.core.celery_app worker --loglevel=info
 
-# Frontend
-cd frontend && npm ci && npm run test
-
-# Full lint/test (CI equivalent)
-./scripts/ci_local.sh
+# Start the pulse beat scheduler
+celery -A app.core.celery_app beat --loglevel=info
 ```
 
-## Future-Ready Strategy
-- Regulation update pipeline via versioned policy packs
-- Compliance pack marketplace abstraction (`control_library_service` extension point)
-- Dataset moat with historical control evaluations and regulator-ready evidence bundles
-- AI governance copilots supported through audit-safe retrieval APIs
+### 4. Interactive Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Navigate to `http://localhost:3000` to interact with your AI Compliance Command Center.
 
+---
 
-## Deployment Modes
-- Cloud-hosted multi-tenant SaaS
-- Single-tenant dedicated enterprise deployment
-- API-first integration mode
-
-See `docs/deployment/modes.md`.
-
-## Security Baseline
-Field encryption, JWT + RBAC, rate limiting, tamper-evident audit logs, and secrets manager integration are documented in `docs/security/hardening.md`.
-
-## Artifact Generation Engine (Differentiator)
-- Convert messy evidence bundles into regulator-ready artifacts (Annex IV, ICMR HITL, BODH readiness, GPCB monthly, DPDPA trail, CS3D).
-- Jurisdiction Bridge maps India controls to EU/US equivalents with transformation instructions.
-- Human-in-the-loop review remains mandatory before issue.
-
-Success metric: Upload evidence and produce Annex IV-ready output in under 15 minutes.
-
-
-## Durable Adoption & Governance Engine
-See `docs/architecture/durable_adoption_governance_engine.md` for adoption, incentive/KPI, regulatory evolution, legacy sidecar, CRE, and HITL governance design.
-
-
-## Supabase Deployment
-This repo is now Supabase-ready for managed Postgres + browser client wiring. See `docs/deployment/supabase.md` for the exact files and env vars to update.
+*AntiGravity provides unmatched depth for Indian AI regulatory integration. Say goodbye to spreadsheets, and let the code do the compliance.*
