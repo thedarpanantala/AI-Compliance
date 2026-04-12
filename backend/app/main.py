@@ -5,21 +5,35 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.v1.routes import router as api_router
 from app.api.v1.artifact_routes import router as artifact_router
 from app.core.config import settings
+from app.core.middleware import RequestSizeLimitMiddleware, SecurityHeadersMiddleware
 
 limiter = Limiter(key_func=get_remote_address, default_limits=[f"{settings.api_rate_limit_per_minute}/minute"])
 
-app = FastAPI(title=settings.app_name, version="1.1.0")
+app = FastAPI(title=settings.app_name, version="1.2.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in settings.allowed_origins.split(",") if origin.strip()],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=[method.strip() for method in settings.cors_allow_methods.split(",") if method.strip()],
+    allow_headers=[header.strip() for header in settings.cors_allow_headers.split(",") if header.strip()],
 )
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=[host.strip() for host in settings.allowed_hosts.split(",") if host.strip()],
+)
+app.add_middleware(RequestSizeLimitMiddleware, max_bytes=settings.max_request_size_bytes)
+if settings.security_headers_enabled:
+    app.add_middleware(
+        SecurityHeadersMiddleware,
+        hsts_seconds=settings.hsts_max_age_seconds,
+        enable_hsts=settings.hsts_enabled,
+    )
+
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.include_router(api_router)
@@ -42,5 +56,8 @@ def security_posture(request: Request) -> JSONResponse:
         "field_encryption_enabled": bool(settings.field_encryption_key),
         "rate_limit_per_minute": settings.api_rate_limit_per_minute,
         "deployment_mode": settings.deployment_mode,
+        "security_headers_enabled": settings.security_headers_enabled,
+        "trusted_hosts": [host.strip() for host in settings.allowed_hosts.split(",") if host.strip()],
+        "max_request_size_bytes": settings.max_request_size_bytes,
     }
     return JSONResponse(payload)

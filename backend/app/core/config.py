@@ -76,6 +76,13 @@ class Settings(BaseSettings):
     supabase_publishable_key: str = Field(default_factory=lambda: os.getenv("SUPABASE_PUBLISHABLE_KEY", ""))
     supabase_service_role_key: str = Field(default_factory=lambda: os.getenv("SUPABASE_SERVICE_ROLE_KEY", ""))
     allowed_origins: str = Field(default_factory=lambda: os.getenv("ALLOWED_ORIGINS", "http://localhost:3000"))
+    allowed_hosts: str = Field(default_factory=lambda: os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver"))
+    cors_allow_methods: str = Field(default_factory=lambda: os.getenv("CORS_ALLOW_METHODS", "GET,POST,PUT,PATCH,DELETE,OPTIONS"))
+    cors_allow_headers: str = Field(default_factory=lambda: os.getenv("CORS_ALLOW_HEADERS", "Authorization,Content-Type,X-Request-ID"))
+    max_request_size_bytes: int = Field(default_factory=lambda: int(os.getenv("MAX_REQUEST_SIZE_BYTES", "1048576")))
+    security_headers_enabled: bool = Field(default_factory=lambda: os.getenv("SECURITY_HEADERS_ENABLED", "true").lower() == "true")
+    hsts_enabled: bool = Field(default_factory=lambda: os.getenv("HSTS_ENABLED", "false").lower() == "true")
+    hsts_max_age_seconds: int = Field(default_factory=lambda: int(os.getenv("HSTS_MAX_AGE_SECONDS", "63072000")))
 
 
 settings = Settings()
