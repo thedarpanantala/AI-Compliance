@@ -32,6 +32,13 @@ Services:
 - API: `http://localhost:8000/docs`
 - UI: `http://localhost:3000`
 
+One-command local start:
+```bash
+./scripts/start_local.sh
+```
+
+Need a shareable preview link for a friend? See `docs/deployment/share_preview.md`.
+
 ## Development Commands
 ```bash
 # Backend
